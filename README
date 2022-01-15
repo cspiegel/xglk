@@ -46,23 +46,6 @@ This is set up for a fairly generic ANSI C compiler. If you get it to
 compile under some particular system, please send me mail, and I'll
 stick in the relevant #ifdefs and whatnot.
 
-If your compiler can't find X11 headers or libraries, change the
-definitions of XLIB and XINCLUDE in the Makefile. There are some
-sample values there. If you find other values that work on particular
-operating systems, send me email.
-
-If your compiler can't find PNG headers or libraries, change the
-definitions of PNGLIB and PNGINCLUDE. If you don't have pnglib
-installed on your system at all, uncomment the definition of
--DNO_PNG_AVAILABLE. I am told that pnglib version 0.96 is too old to
-work with XGlk. I've tested it with pnglib 1.0.1 and 1.0.3, both of
-which are fine.
-
-If your compiler can't find JPEG headers or libraries, change the
-definitions of JPEGLIB and JPEGINCLUDE. If you don't have libjpeg
-installed on your system at all, uncomment the definition of
--DNO_JPEG_AVAILABLE.
-
 If you get errors in xio.c about fd_set or FD_SET being undefined, put
 "-DNEEDS_SELECT_H" in the SYSTEMFLAGS line, as has been done for the
 RS6000.

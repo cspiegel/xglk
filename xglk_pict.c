@@ -3,16 +3,8 @@
 #include <string.h>
 #include <sys/param.h>
 
-#ifndef NO_PNG_AVAILABLE
 #include <png.h>
-#endif /* NO_PNG_AVAILABLE */
-#ifndef NO_JPEG_AVAILABLE
 #include <jpeglib.h>
-#endif /* NO_JPEG_AVAILABLE */
-
-#if defined(NO_PNG_AVAILABLE) && defined(NO_JPEG_AVAILABLE)
-#define NOTHING_AVAILABLE
-#endif
 
 #include "xglk.h"
 #include "gi_blorb.h"
@@ -46,12 +38,6 @@ picture_t *picture_find(unsigned long id)
   FILE *fl;
   int closeafter;
   glui32 chunktype;
-
-#ifdef NOTHING_AVAILABLE
-
-  return NULL;
-
-#else /* NOTHING_AVAILABLE */
 
   if (!imageslegal) {
     return NULL;
@@ -124,15 +110,11 @@ picture_t *picture_find(unsigned long id)
 
   gimp = NULL;
 
-#ifndef NO_PNG_AVAILABLE
   if (chunktype == giblorb_ID_PNG)
     gimp = load_image_png(fl);
-#endif /* NO_PNG_AVAILABLE */
 
-#ifndef NO_JPEG_AVAILABLE
   if (chunktype == giblorb_ID_JPEG)
     gimp = load_image_jpeg(fl);
-#endif /* NO_JPEG_AVAILABLE */
 
   if (closeafter)
     fclose(fl);
@@ -159,8 +141,6 @@ picture_t *picture_find(unsigned long id)
   table[buck] = pic;
 
   return pic;
-
-#endif /* NOTHING_AVAILABLE */
 }
 
 void picture_release(picture_t *pic)
@@ -274,8 +254,6 @@ static void parse_mask(unsigned long mask, int *noffptr, int *nlenptr)
   *nlenptr = nlen;
 }
 
-#ifndef NO_JPEG_AVAILABLE
-
 static XImage *load_image_jpeg(FILE *fl)
 {
   int ix, jx;
@@ -348,10 +326,6 @@ static XImage *load_image_jpeg(FILE *fl)
 
   return gimp;
 }
-
-#endif /* NO_JPEG_AVAILABLE */
-
-#ifndef NO_PNG_AVAILABLE
 
 static XImage *load_image_png(FILE *fl)
 {
@@ -497,8 +471,6 @@ static XImage *load_image_png(FILE *fl)
 
   return gimp;
 }
-
-#endif /* NO_PNG_AVAILABLE */
 
 static void fill_image(XImage *gimp, char *srcdata, char *destdata,
   int width, int height, int channels, int destdepth,

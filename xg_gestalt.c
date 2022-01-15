@@ -76,15 +76,11 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
     return FALSE;
 
   case gestalt_DrawImage: {
-#if defined(NO_PNG_AVAILABLE) || defined(NO_JPEG_AVAILABLE)
-    return FALSE;
-#else
     if (!imageslegal)
       return FALSE;
     if (val == wintype_Graphics || val == wintype_TextBuffer)
       return TRUE;
     return FALSE;
-#endif /* NO_PNG_AVAILABLE */
   }
 
   case gestalt_Sound:

@@ -42,51 +42,15 @@
 
 # --------------------
 
-# definitions for where the X lib and include directories are.
-# The following are defaults that might work.
-
-# If your compiler can't find these things, try commenting out the
-# above, and uncommenting various versions below. Also look around
-# your hard drive for the appropriate files. (The XINCLUDE directory
-# should contain the file "Xlib.h", and the XLIB dir should contain 
-# "libX11.so" or "libX11.a".)
-# The problem is, depending on how things are installed, the
-# directories could be just about anywhere. Sigh.
-
-# for Debian Linux
-#XINCLUDE = -I/usr/X11R6/include/X11
-#XLIB = -L/usr/X11R6/lib -lX11
-
-# for Red Hat Linux
-XINCLUDE = -I/usr/X11R6/include/X11
-XLIB = -L/usr/X11R6/lib -lX11
-
-# for SparcStation / Solaris 
-#XINCLUDE = -I/usr/openwin/include
-#XLIB = -R/usr/openwin/lib -L/usr/openwin/lib/ -lX11 
-
-# --------------------
-
-# definitions for where the PNG and JPEG libs are. 
-PNGINCLUDE = 
-PNGLIB = -lpng
-JPEGINCLUDE = 
-JPEGLIB = -ljpeg
-
-# If there is no PNG lib available, uncomment this line.
-# PNGFLAG = -DNO_PNG_AVAILABLE
-# If there is no JPEG lib available, uncomment this line.
-# JPEGFLAG = -DNO_JPEG_AVAILABLE
-
-# --------------------
-
 # Pick a C compiler.
 #CC = cc
 CC = gcc
 
-CFLAGS = -O -std=c11 -D_XOPEN_SOURCE=600 $(PNGFLAG) $(JPEGFLAG) $(PNGINCLUDE) $(JPEGINCLUDE) -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused -Wbad-function-cast $(SYSTEMFLAGS) $(XINCLUDE)
+PKG = libpng libjpeg x11
+
+CFLAGS = -O -std=c11 -D_XOPEN_SOURCE=600 $(shell pkg-config $(PKG) --cflags) -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused -Wbad-function-cast $(SYSTEMFLAGS)
 LDFLAGS =
-LIBS = $(XLIB) $(PNGLIB) $(JPEGLIB) $(SYSTEMLIBS)
+LIBS = $(shell pkg-config $(PKG) --libs) $(SYSTEMLIBS)
 
 OBJS = main.o xglk.o xglk_vars.o xglk_prefs.o xglk_loop.o xglk_init.o \
   xglk_scrap.o xglk_msg.o xglk_key.o xglk_weggie.o xglk_pict.o \
