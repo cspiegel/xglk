@@ -78,7 +78,7 @@ typedef struct winprefs_struct {
 
 typedef struct preferences_struct {
   int win_x, win_y;
-  int win_w, win_h;
+  unsigned int win_w, win_h;
   XColor forecolor;
   XColor linkcolor;
   XColor backcolor;

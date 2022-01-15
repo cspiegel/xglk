@@ -219,12 +219,12 @@ stream_t *glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
     return 0;
   
   if (buf && buflen) {
-    str->buf = buf;
-    str->bufptr = buf;
+    str->buf = (unsigned char *)buf;
+    str->bufptr = (unsigned char *)buf;
     str->buflen = buflen;
     str->bufend = str->buf + str->buflen;
     if (fmode == filemode_Write)
-      str->bufeof = buf;
+      str->bufeof = (unsigned char *)buf;
     else
       str->bufeof = str->bufend;
     if (gli_register_arr) {

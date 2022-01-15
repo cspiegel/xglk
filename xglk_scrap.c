@@ -1,5 +1,6 @@
 #include "xglk.h"
 #include <stdlib.h>
+#include <string.h>
 #include <X11/Xatom.h>
 #include "xg_internal.h"
 

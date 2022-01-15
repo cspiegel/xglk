@@ -84,7 +84,7 @@ JPEGLIB = -ljpeg
 #CC = cc
 CC = gcc
 
-CFLAGS = -O -ansi $(PNGFLAG) $(JPEGFLAG) $(PNGINCLUDE) $(JPEGINCLUDE) -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused -Wbad-function-cast $(SYSTEMFLAGS) $(XINCLUDE)
+CFLAGS = -O -std=c11 -D_GNU_SOURCE $(PNGFLAG) $(JPEGFLAG) $(PNGINCLUDE) $(JPEGINCLUDE) -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused -Wbad-function-cast $(SYSTEMFLAGS) $(XINCLUDE)
 LDFLAGS =
 LIBS = $(XLIB) $(PNGLIB) $(JPEGLIB) $(SYSTEMLIBS)
 

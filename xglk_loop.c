@@ -219,7 +219,7 @@ void xglk_event_loop(event_t *ev, glui32 millisec)
 	  XGetAtomName(xiodpy, req->target),
 	  8, PropModeReplace, *cx, len);*/
 	val = XChangeProperty(xiodpy, req->requestor, req->property,
-	  req->target, 8, PropModeReplace, cx, len);
+	  req->target, 8, PropModeReplace, (unsigned char *)cx, len);
 	/*printf("### XChangeProperty got %d\n", val);*/
       }
       else {

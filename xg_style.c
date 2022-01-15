@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "xglk.h"
 #include "xg_internal.h"
 

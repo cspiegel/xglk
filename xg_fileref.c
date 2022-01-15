@@ -164,7 +164,7 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
 {
   fileref_t *fref;
   char buf[256];
-  char buf2[256];
+  char buf2[512];
   int len;
   char *cx;
     
@@ -215,7 +215,7 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
 {
   fileref_t *fref;
   struct stat sbuf;
-  char buf[256], prbuf[256], newbuf[256];
+  char buf[256], prbuf[512], newbuf[512];
   char *cx;
   int ix, val;
   char *prompt, *prompt2, *lastbuf;

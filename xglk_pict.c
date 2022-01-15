@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/param.h>
 
 #ifndef NO_PNG_AVAILABLE
@@ -333,7 +334,7 @@ static XImage *load_image_jpeg(FILE *fl)
       }
       jpeg_finish_decompress(&cinfo);
 
-      fill_image(gimp, srcdata, destdata, width, height,
+      fill_image(gimp, (char *)srcdata, destdata, width, height,
 	channels, destdepth, srcrowbytes, destrowbytes);
     }    
   }
@@ -385,7 +386,7 @@ static XImage *load_image_png(FILE *fl)
     return NULL;
   }
 
-  if (setjmp(png_ptr->jmpbuf)) {
+  if (setjmp(png_jmpbuf(png_ptr))) {
     /* If we jump here, we had a problem reading the file */
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
     if (rowarray)
@@ -483,7 +484,7 @@ static XImage *load_image_png(FILE *fl)
       png_read_image(png_ptr, rowarray); 
       png_read_end(png_ptr, info_ptr);
 
-      fill_image(gimp, srcdata, destdata, width, height,
+      fill_image(gimp, (char *)srcdata, destdata, width, height,
 	channels, destdepth, srcrowbytes, destrowbytes);
     }
   }
@@ -902,7 +903,7 @@ static XImage *scale_image(XImage *src, int destwidth, int destheight)
   destdata = (unsigned char *)malloc(destrowbytes * destheight);
 
   dest = XCreateImage(xiodpy, DefaultVisual(xiodpy, xioscn), 
-    depth, ZPixmap, 0, destdata, 
+    depth, ZPixmap, 0, (char *)destdata, 
     destwidth, destheight, 32, destrowbytes);
   if (!dest)
     return NULL;
@@ -955,7 +956,7 @@ static XImage *scale_image(XImage *src, int destwidth, int destheight)
 
   if (depth == 1) {
     destrow = destdata;
-    srcrow = src->data;
+    srcrow = (unsigned char *)src->data;
     ycounter = 0;
 
     for (jx=0; jx<destheight; jx++) {
@@ -978,7 +979,7 @@ static XImage *scale_image(XImage *src, int destwidth, int destheight)
   }
   else {
     destrow = destdata;
-    srcrow = src->data;
+    srcrow = (unsigned char *)src->data;
     ycounter = 0;
 
     for (jx=0; jx<destheight; jx++) {
