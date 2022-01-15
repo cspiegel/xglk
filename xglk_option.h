@@ -2,7 +2,7 @@
 #define XGLK_OPTION_H
 
 /* This is the only XGlk source file you should need to edit
-    in order to compile the library. 
+    in order to compile the library.
 */
 
 /* Options: */

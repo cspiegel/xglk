@@ -6,7 +6,7 @@
 
 static int inittime = FALSE;
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   int err;
   glkunix_startup_t startdata;
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   return 0; /* We never reach here, really */
 }
 
-strid_t glkunix_stream_open_pathname(char *pathname, glui32 textmode, 
+strid_t glkunix_stream_open_pathname(char *pathname, glui32 textmode,
   glui32 rock)
 {
   if (!inittime)

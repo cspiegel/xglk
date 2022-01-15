@@ -4,7 +4,7 @@ typedef struct window_textbuffer_struct window_textbuffer_t;
 extern struct window_textbuffer_struct *win_textbuffer_create(window_t *win);
 extern void win_textbuffer_destroy(struct window_textbuffer_struct *dwin);
 extern void win_textbuffer_rearrange(window_t *win, XRectangle *box);
-extern void win_textbuffer_perform_click(window_t *win, int dir, XPoint *pt, 
+extern void win_textbuffer_perform_click(window_t *win, int dir, XPoint *pt,
   int butnum, int clicknum, unsigned int state);
 extern void win_textbuffer_get_size(window_t *win, glui32 *width, glui32 *height);
 extern long win_textbuffer_figure_size(window_t *win, long size, int vertical);
@@ -16,13 +16,13 @@ extern void win_textbuffer_activate(window_t *win, int turnon);
 extern void win_textbuffer_setfocus(window_t *win, int turnon);
 extern void win_textbuffer_caret_changed(window_t *win, int turnon);
 extern void win_textbuffer_flush(window_t *win);
-extern void win_textbuffer_init_line(window_t *win, char *buffer, int buflen, 
+extern void win_textbuffer_init_line(window_t *win, char *buffer, int buflen,
   int readpos);
 extern void win_textbuffer_cancel_line(window_t *win, event_t *ev);
 
 
 extern void win_textbuffer_add(window_textbuffer_t *cutwin, char ch, long pos);
-extern void win_textbuffer_replace(window_textbuffer_t *cutwin, long pos, long oldlen, 
+extern void win_textbuffer_replace(window_textbuffer_t *cutwin, long pos, long oldlen,
   char *buf, long newlen);
 extern void win_textbuffer_set_style_text(window_textbuffer_t *cutwin, glui32 attr);
 extern void win_textbuffer_set_style_image(window_textbuffer_t *cutwin,

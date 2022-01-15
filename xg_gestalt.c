@@ -10,14 +10,14 @@ glui32 glk_gestalt(glui32 id, glui32 val)
 glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 {
   int ix;
-  
+
   switch (id) {
 
   case gestalt_Version:
     return 0x00000601;
-    
+
   case gestalt_LineInput:
-    if (val >= 0 && val <= 31) 
+    if (val >= 0 && val <= 31)
       return FALSE;
     if (val >= 127 && val <= 159)
       return FALSE;
@@ -29,8 +29,8 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 #endif
     return TRUE;
 
-  case gestalt_CharInput: 
-    if (val >= 0 && val <= 31) 
+  case gestalt_CharInput:
+    if (val >= 0 && val <= 31)
       return TRUE;
     if (val >= 127 && val <= 159)
       return FALSE;
@@ -57,9 +57,9 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
     return gestalt_CharOutput_ExactPrint;
   }
 
-  case gestalt_Timer: 
+  case gestalt_Timer:
     return TRUE;
-  
+
   case gestalt_MouseInput: {
     switch (val) {
     case wintype_Graphics:
@@ -70,11 +70,11 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
     }
   }
 
-  case gestalt_Graphics: 
+  case gestalt_Graphics:
     return TRUE;
   case gestalt_GraphicsTransparency:
     return FALSE;
-  
+
   case gestalt_DrawImage: {
 #if defined(NO_PNG_AVAILABLE) || defined(NO_JPEG_AVAILABLE)
     return FALSE;
@@ -89,14 +89,14 @@ glui32 glk_gestalt_ext(glui32 id, glui32 val, glui32 *arr, glui32 arrlen)
 
   case gestalt_Sound:
   case gestalt_SoundVolume:
-  case gestalt_SoundNotify: 
+  case gestalt_SoundNotify:
   case gestalt_SoundMusic:
     return FALSE;
 
   case gestalt_Hyperlinks: {
     return TRUE;
   }
-  
+
   case gestalt_HyperlinkInput: {
     switch (val) {
     case wintype_TextBuffer:

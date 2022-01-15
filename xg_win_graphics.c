@@ -10,7 +10,7 @@ struct window_graphics_struct {
 
   XRectangle winbox;
   XPoint dirtyul, dirtylr;
-  
+
   XColor background;
   GC gcfill;
 
@@ -25,11 +25,11 @@ window_graphics_t *win_graphics_create(window_t *win)
   XRectangle box;
   XGCValues gcvalues;
   int jx;
-  window_graphics_t *res = 
+  window_graphics_t *res =
     (window_graphics_t *)malloc(sizeof(window_graphics_t));
   if (!res)
     return NULL;
-  
+
   res->owner = win;
 
   res->winbox.x = 0;
@@ -41,7 +41,7 @@ window_graphics_t *win_graphics_create(window_t *win)
   res->dirtyul.y = 0;
   res->dirtylr.x = 0;
   res->dirtylr.y = 0;
-  
+
   res->world = 0;
 
   UnpackRGBColor(&res->background, 0xFFFFFF);
@@ -50,16 +50,16 @@ window_graphics_t *win_graphics_create(window_t *win)
   gcvalues.function = GXcopy;
   gcvalues.foreground = res->background.pixel;
   gcvalues.background = res->background.pixel;
-  res->gcfill = XCreateGC(xiodpy, xiowin, 
+  res->gcfill = XCreateGC(xiodpy, xiowin,
     GCForeground|GCBackground, &gcvalues);
-  
+
   return res;
 }
 
 void win_graphics_destroy(window_graphics_t *dwin)
 {
   dwin->owner = NULL;
-  
+
   if (dwin->world) {
     XFreePixmap(xiodpy, dwin->world);
     dwin->world = 0;
@@ -77,7 +77,7 @@ void win_graphics_rearrange(window_t *win, XRectangle *box)
   window_graphics_t *dwin = win->data;
   Pixmap newpixmap = 0;
   int bothwid, bothhgt;
-  
+
   if (box->width <= 0 || box->height <= 0) {
     if (dwin->world) {
       XFreePixmap(xiodpy, dwin->world);
@@ -96,9 +96,9 @@ void win_graphics_rearrange(window_t *win, XRectangle *box)
 
   newpixmap = XCreatePixmap(xiodpy, xiowin, box->width, box->height,
     xiodepth);
-  
+
   if (dwin->world && bothwid && bothhgt) {
-    XCopyArea(xiodpy, dwin->world, newpixmap, gcfore, 
+    XCopyArea(xiodpy, dwin->world, newpixmap, gcfore,
       0, 0, bothwid, bothhgt, 0, 0);
   }
 
@@ -110,11 +110,11 @@ void win_graphics_rearrange(window_t *win, XRectangle *box)
   dwin->world = newpixmap;
 
   if (box->width > dwin->winbox.width) {
-    win_graphics_erase_rect(dwin, FALSE, dwin->winbox.width, 0, 
+    win_graphics_erase_rect(dwin, FALSE, dwin->winbox.width, 0,
       box->width-dwin->winbox.width, box->height);
   }
   if (box->height > dwin->winbox.height) {
-    win_graphics_erase_rect(dwin, FALSE, 0, dwin->winbox.height, 
+    win_graphics_erase_rect(dwin, FALSE, 0, dwin->winbox.height,
       box->width, box->height-dwin->winbox.height);
   }
 
@@ -137,7 +137,7 @@ XRectangle *win_graphics_get_rect(window_t *win)
 long win_graphics_figure_size(window_t *win, long size, int vertical)
 {
   window_graphics_t *dwin = win->data;
-  
+
   if (vertical) {
     return size;
   }
@@ -156,7 +156,7 @@ void win_graphics_get_size(window_t *win, glui32 *width, glui32 *height)
 void win_graphics_redraw(window_t *win)
 {
   window_graphics_t *dwin = win->data;
-  
+
   dwin->dirtyul.x = dwin->winbox.width;
   dwin->dirtyul.y = dwin->winbox.height;
   dwin->dirtylr.x = 0;
@@ -172,7 +172,7 @@ void win_graphics_redraw(window_t *win)
   }
 
   XCopyArea(xiodpy, dwin->world, xiowin, gcfore,
-    0, 0, dwin->winbox.width, dwin->winbox.height, 
+    0, 0, dwin->winbox.width, dwin->winbox.height,
     dwin->bbox.x, dwin->bbox.y);
 }
 
@@ -205,20 +205,20 @@ void win_graphics_flush(window_t *win)
 
   width = boxlr.x - boxul.x;
   height = boxlr.y - boxul.y;
-  
+
   if (!dwin->world) {
     return;
   }
-  
+
   XCopyArea(xiodpy, dwin->world, xiowin, gcfore,
     boxul.x, boxul.y, width, height,
     dwin->bbox.x+boxul.x, dwin->bbox.y+boxul.y);
 }
 
-void win_graphics_perform_click(window_t *win, int dir, XPoint *pt, 
+void win_graphics_perform_click(window_t *win, int dir, XPoint *pt,
   int butnum, int clicknum, unsigned int state)
 {
-  window_graphics_t *dwin = win->data; 
+  window_graphics_t *dwin = win->data;
   long pos;
   long px, px2;
 
@@ -233,13 +233,13 @@ void win_graphics_perform_click(window_t *win, int dir, XPoint *pt,
   else if (dir == mouse_Up) {
     if (dwin->drag_mouseevent) {
       dwin->owner->mouse_request = FALSE;
-      eventloop_setevent(evtype_MouseInput, dwin->owner, 
+      eventloop_setevent(evtype_MouseInput, dwin->owner,
 	dwin->drag_pt.x, dwin->drag_pt.y);
     }
   }
 }
 
-static void dirty_rect(XPoint *ul, XPoint *lr, 
+static void dirty_rect(XPoint *ul, XPoint *lr,
   int x, int y, int width, int height)
 {
   if (ul->x > x)
@@ -252,31 +252,31 @@ static void dirty_rect(XPoint *ul, XPoint *lr,
     lr->y = y+height;
 }
 
-glui32 win_graphics_draw_picture(window_graphics_t *dwin, glui32 image, 
+glui32 win_graphics_draw_picture(window_graphics_t *dwin, glui32 image,
   glsi32 xpos, glsi32 ypos,
   int scale, glui32 imagewidth, glui32 imageheight)
 {
   picture_t *pic = picture_find(image);
-  
+
   if (!pic) {
     return FALSE;
   }
-  
+
   if (!scale) {
     imagewidth = pic->width;
     imageheight = pic->height;
   }
-  
+
   if (dwin->world) {
     picture_draw(pic, dwin->world, xpos, ypos, imagewidth, imageheight, NULL);
-    dirty_rect(&dwin->dirtyul, &dwin->dirtylr, 
+    dirty_rect(&dwin->dirtyul, &dwin->dirtylr,
       xpos, ypos, imagewidth, imageheight);
   }
   else {
-    picture_draw(pic, xiowin, dwin->bbox.x+xpos, dwin->bbox.y+ypos, 
+    picture_draw(pic, xiowin, dwin->bbox.x+xpos, dwin->bbox.y+ypos,
       imagewidth, imageheight, NULL);
   }
-  
+
   picture_release(pic);
   return TRUE;
 }
@@ -285,27 +285,27 @@ void win_graphics_erase_rect(window_graphics_t *dwin, int whole,
   glsi32 left, glsi32 top, glui32 width, glui32 height)
 {
   XGCValues gcvalues;
-  
+
   if (whole) {
     left = 0;
     top = 0;
     width = dwin->winbox.width;
     height = dwin->winbox.height;
   }
-  
+
   if (width == 0 || height == 0)
     return;
 
   gcvalues.foreground = dwin->background.pixel;
   XChangeGC(xiodpy, dwin->gcfill, GCForeground, &gcvalues);
-  
+
   if (!dwin->world) {
     XFillRectangle(xiodpy, xiowin, dwin->gcfill,
       dwin->bbox.x+left, dwin->bbox.y+top, width, height);
     return;
   }
-  
-  dirty_rect(&dwin->dirtyul, &dwin->dirtylr, 
+
+  dirty_rect(&dwin->dirtyul, &dwin->dirtylr,
     left, top, (glsi32)width, (glsi32)height);
 
   XFillRectangle(xiodpy, dwin->world, dwin->gcfill,
@@ -326,21 +326,21 @@ void win_graphics_fill_rect(window_graphics_t *dwin, glui32 color,
 
   gcvalues.foreground = col.pixel;
   XChangeGC(xiodpy, dwin->gcfill, GCForeground, &gcvalues);
-  
+
   if (!dwin->world) {
     XFillRectangle(xiodpy, xiowin, dwin->gcfill,
       dwin->bbox.x+left, dwin->bbox.y+top, width, height);
     return;
   }
-  
-  dirty_rect(&dwin->dirtyul, &dwin->dirtylr, 
+
+  dirty_rect(&dwin->dirtyul, &dwin->dirtylr,
     left, top, (glsi32)width, (glsi32)height);
 
   XFillRectangle(xiodpy, dwin->world, dwin->gcfill,
     left, top, width, height);
 }
 
-void win_graphics_set_background_color(window_graphics_t *dwin, 
+void win_graphics_set_background_color(window_graphics_t *dwin,
   glui32 color)
 {
   UnpackRGBColor(&dwin->background, color);

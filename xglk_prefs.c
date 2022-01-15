@@ -52,27 +52,27 @@ int xglk_init_preferences(int argc, char *argv[],
     db = XrmGetStringDatabase(resourcestring);
   }
 
-  XrmParseCommand(&db, argtable, 
+  XrmParseCommand(&db, argtable,
     sizeof(argtable) / sizeof(XrmOptionDescRec),
     "glk", &argc, argv);
 
   /* Now the program-specific argument parsing. */
   startdata->argc = 0;
   startdata->argv = (char **)malloc(argc * sizeof(char *));
-  
+
   /* Copy in the program name. */
   startdata->argv[startdata->argc] = argv[0];
   startdata->argc++;
-    
+
   for (ix=1; ix<argc && !errflag; ix++) {
     glkunix_argumentlist_t *argform;
     int inarglist = FALSE;
     char *cx;
-        
-    for (argform = glkunix_arguments; 
-	 argform->argtype != glkunix_arg_End && !errflag; 
+
+    for (argform = glkunix_arguments;
+	 argform->argtype != glkunix_arg_End && !errflag;
 	 argform++) {
-            
+
       if (argform->name[0] == '\0') {
 	if (argv[ix][0] != '-') {
 	  startdata->argv[startdata->argc] = argv[ix];
@@ -90,10 +90,10 @@ int xglk_init_preferences(int argc, char *argv[],
       }
       else if (!strcmp(argv[ix], argform->name)) {
 	int numeat = 0;
-                
+
 	if (argform->argtype == glkunix_arg_ValueFollows) {
 	  if (ix+1 >= argc) {
-	    printf("%s: %s must be followed by a value\n", 
+	    printf("%s: %s must be followed by a value\n",
 	      argv[0], argform->name);
 	    errflag = TRUE;
 	    break;
@@ -114,7 +114,7 @@ int xglk_init_preferences(int argc, char *argv[],
 	else if (argform->argtype == glkunix_arg_NumberValue) {
 	  if (ix+1 >= argc
 	    || (atoi(argv[ix+1]) == 0 && argv[ix+1][0] != '0')) {
-	    printf("%s: %s must be followed by a number\n", 
+	    printf("%s: %s must be followed by a number\n",
 	      argv[0], argform->name);
 	    errflag = TRUE;
 	    break;
@@ -125,7 +125,7 @@ int xglk_init_preferences(int argc, char *argv[],
 	  errflag = TRUE;
 	  break;
 	}
-                
+
 	for (jx=0; jx<numeat; jx++) {
 	  startdata->argv[startdata->argc] = argv[ix];
 	  startdata->argc++;
@@ -166,7 +166,7 @@ int xglk_init_preferences(int argc, char *argv[],
   prefs.win_h = 600;
   prefs.win_x = 64;
   prefs.win_y = 10;
-  if (db && XrmGetResource(db, 
+  if (db && XrmGetResource(db,
     "glk.geometry", "Glk.Geometry",
     &cx, &xval)) {
     XParseGeometry(xval.addr, &prefs.win_x, &prefs.win_y,
@@ -264,21 +264,21 @@ int xglk_init_preferences(int argc, char *argv[],
 
   if (db && XrmGetResource(db,
     "glk.textBuffer.saveLength", "Glk.TextBuffer.SaveLength",
-    &cx, &xval)) 
+    &cx, &xval))
     prefs.buffersize = atoi(xval.addr);
   else
     prefs.buffersize = 8000;
 
   if (db && XrmGetResource(db,
     "glk.textBuffer.saveSlack", "Glk.TextBuffer.SaveSlack",
-    &cx, &xval)) 
+    &cx, &xval))
     prefs.bufferslack = atoi(xval.addr);
   else
     prefs.bufferslack = 1000;
 
   if (db && XrmGetResource(db,
     "glk.historyLength", "Glk.HistoryLength",
-    &cx, &xval)) 
+    &cx, &xval))
     prefs.historylength = atoi(xval.addr);
   else
     prefs.historylength = 20;
@@ -310,9 +310,9 @@ int xglk_init_preferences(int argc, char *argv[],
     prefs.underlinelinks = TRUE;
   }
 
-  for (wprefs = &(prefs.textbuffer); 
+  for (wprefs = &(prefs.textbuffer);
        wprefs;
-       wprefs 
+       wprefs
 	 = (((wprefs == &(prefs.textbuffer)) ? &(prefs.textgrid) : NULL))) {
 
     char classbuf[256];
@@ -412,7 +412,7 @@ int xglk_init_preferences(int argc, char *argv[],
       sprintf(classbuf, "%s.%s.%s.size", "glk", instance, stylenames[ix]);
       if (db && XrmGetResource(db,
         classbuf, "Glk.Window.Style.Size",
-        &cx, &xval)) 
+        &cx, &xval))
         val = atoi(xval.addr);
       else
 	val = 0;
@@ -421,11 +421,11 @@ int xglk_init_preferences(int argc, char *argv[],
       sprintf(classbuf, "%s.%s.%s.weight", "glk", instance, stylenames[ix]);
       if (db && XrmGetResource(db,
         classbuf, "Glk.Window.Style.Weight",
-        &cx, &xval)) 
+        &cx, &xval))
         val = atoi(xval.addr);
       else
-	val = (ix == style_Input 
-	  || ix == style_Header 
+	val = (ix == style_Input
+	  || ix == style_Header
 	  || ix == style_Subheader)
 	  ? 1 : 0;
       fprefs->weight = val;
@@ -433,7 +433,7 @@ int xglk_init_preferences(int argc, char *argv[],
       sprintf(classbuf, "%s.%s.%s.oblique", "glk", instance, stylenames[ix]);
       if (db && XrmGetResource(db,
         classbuf, "Glk.Window.Style.Oblique",
-        &cx, &xval)) 
+        &cx, &xval))
         val = atoi(xval.addr);
       else
 	val = (ix == style_Emphasized) ? 1 : 0;
@@ -442,17 +442,17 @@ int xglk_init_preferences(int argc, char *argv[],
       sprintf(classbuf, "%s.%s.%s.proportional", "glk", instance, stylenames[ix]);
       if (db && XrmGetResource(db,
         classbuf, "Glk.Window.Style.Proportional",
-        &cx, &xval)) 
+        &cx, &xval))
         val = atoi(xval.addr);
       else
-	val = (ix == style_Preformatted || wprefs == &(prefs.textgrid)) 
+	val = (ix == style_Preformatted || wprefs == &(prefs.textgrid))
 	  ? 0 : 1;
       fprefs->proportional = val;
 
       sprintf(classbuf, "%s.%s.%s.justify", "glk", instance, stylenames[ix]);
       if (db && XrmGetResource(db,
         classbuf, "Glk.Window.Style.Justify",
-        &cx, &xval)) 
+        &cx, &xval))
         val = atoi(xval.addr);
       else
 	val = 1;
@@ -461,7 +461,7 @@ int xglk_init_preferences(int argc, char *argv[],
       sprintf(classbuf, "%s.%s.%s.indent", "glk", instance, stylenames[ix]);
       if (db && XrmGetResource(db,
         classbuf, "Glk.Window.Style.Indent",
-        &cx, &xval)) 
+        &cx, &xval))
         val = atoi(xval.addr);
       else
 	val = 0;
@@ -470,7 +470,7 @@ int xglk_init_preferences(int argc, char *argv[],
       sprintf(classbuf, "%s.%s.%s.parIndent", "glk", instance, stylenames[ix]);
       if (db && XrmGetResource(db,
         classbuf, "Glk.Window.Style.ParIndent",
-        &cx, &xval)) 
+        &cx, &xval))
         val = atoi(xval.addr);
       else
 	val = 0;
@@ -565,7 +565,7 @@ static char *parse_fontnamespec(char *str, fontnamespec_t **result)
     (*spec)->next = NULL;
 
     if (*str == '%') {
-      fontnamespecopt_t *opt = 
+      fontnamespecopt_t *opt =
 	(fontnamespecopt_t *)malloc(sizeof(fontnamespecopt_t));
       fontnamespec_t *subspec;
       (*spec)->type = fnstype_Option;
@@ -580,13 +580,13 @@ static char *parse_fontnamespec(char *str, fontnamespec_t **result)
 	str = parse_fontnamespec(str, &subspec);
 	if (opt->numopts == 0) {
 	  opt->numopts++;
-	  opt->opts = 
+	  opt->opts =
 	    (fontnamespec_t **)malloc(opt->numopts * sizeof(fontnamespec_t *));
 	}
 	else {
 	  opt->numopts++;
-	  opt->opts = 
-	    (fontnamespec_t **)realloc(opt->opts, 
+	  opt->opts =
+	    (fontnamespec_t **)realloc(opt->opts,
 	      opt->numopts * sizeof(fontnamespec_t *));
 	}
 	opt->opts[opt->numopts-1] = subspec;
@@ -612,7 +612,7 @@ static char *parse_fontnamespec(char *str, fontnamespec_t **result)
   return str;
 }
 
-void xglk_build_fontname(fontnamespec_t *spec, char *buf, 
+void xglk_build_fontname(fontnamespec_t *spec, char *buf,
   int size, int weight, int oblique, int proportional)
 {
   char *str = buf;

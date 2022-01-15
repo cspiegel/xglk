@@ -11,7 +11,7 @@
 /* ### find and kill: cutwin->font.line{height,off} */
 
 typedef struct style_struct {
-  int stype; 
+  int stype;
   int imagealign; /* from the Glk constants */
   glui32 linkid; /* for hyperlinks */
   glui32 image; /* resource ID */
@@ -35,7 +35,7 @@ typedef struct word_struct {
   glui32 attr;
   glui32 linkid;
   union {
-    long *letterpos; /* if not NULL, an array[0..len] of pixel offsets 
+    long *letterpos; /* if not NULL, an array[0..len] of pixel offsets
 			from wordpos; */
     imageword_t *image;
   } u;
@@ -46,8 +46,8 @@ typedef struct word_struct {
 
 typedef struct lline_struct {
   long pos; /* line starts here */
-  long posend; /* number of chars. May not be exactly to start of next line, 
-		  because it won't include the newline or space that ends 
+  long posend; /* number of chars. May not be exactly to start of next line,
+		  because it won't include the newline or space that ends
 		  the line. */
   long indent; /* in pixels, from textwin_w (0 or greater) */
   word_t *wordlist;
@@ -71,9 +71,9 @@ struct window_textbuffer_struct {
   XRectangle bbox;
 
   int textwin_x, textwin_y, textwin_w, textwin_h; /* bbox minus margins */
-  /*XRectangle textwin_cursor_box;*/ /* This is the area in which the cursor 
+  /*XRectangle textwin_cursor_box;*/ /* This is the area in which the cursor
 				    is an ibeam. Assuming we do cursors. */
-  wegscroll_t scrollbar; 
+  wegscroll_t scrollbar;
 
   stylehints_t hints;
   fontset_t font;
@@ -94,26 +94,26 @@ struct window_textbuffer_struct {
   long tmplines_size;
 
   long scrollpos; /* character position at top of screen */
-  long scrollline; /* number of line at top of screen, after 
+  long scrollline; /* number of line at top of screen, after
 		      win_textbuffer_layout() */
-  long lastseenline; /* last line read before more stuff was output. If 
+  long lastseenline; /* last line read before more stuff was output. If
 			everything has been read, this is numlines. */
   long dotpos, dotlen; /* dotpos is in [0..numchars] */
-  long lastdotpos, lastdotlen; /* cached values -- fiddled inside 
+  long lastdotpos, lastdotlen; /* cached values -- fiddled inside
 				  win_textbuffer_layout() */
 
   long linesonpage; /* this stuff is set by xtext_layout() too. */
   long lineoffset_size;
-  int *lineoffsetlist; /* In [0..linesonpage], and the first element is 
+  int *lineoffsetlist; /* In [0..linesonpage], and the first element is
 			    zero. */
 
   long drag_firstbeg, drag_firstend;
-  int drag_inscroll; 
+  int drag_inscroll;
   glui32 drag_firstlink;
 
   int isactive; /* is window active? */
 
-  long dirtybeg, dirtyend; /* mark the limits of what needs to be laid 
+  long dirtybeg, dirtyend; /* mark the limits of what needs to be laid
 			      out, [) format */
   long dirtydelta; /* how much the dirty area has grown (or shrunk) */
 
@@ -136,23 +136,23 @@ struct window_textbuffer_struct {
 #define BARWIDTH (18)
 #define MACSTYLESCROLL
 
-static void redrawtext(window_textbuffer_t *cutwin, long beg, 
+static void redrawtext(window_textbuffer_t *cutwin, long beg,
   long num, int clearnum);
 static void win_textbuffer_layout(window_textbuffer_t *cutwin);
 static void flip_selection(window_textbuffer_t *cutwin, long dpos, long dlen);
-static long find_loc_by_pos(window_textbuffer_t *cutwin, long pos, 
+static long find_loc_by_pos(window_textbuffer_t *cutwin, long pos,
   int *xposret, int *yposret);
 static long find_pos_by_loc(window_textbuffer_t *cutwin, int xpos, int ypos,
   long *truepos);
-static long find_line_by_pos(window_textbuffer_t *cutwin, long pos, 
+static long find_line_by_pos(window_textbuffer_t *cutwin, long pos,
   long guessline);
-static void measure_word(window_textbuffer_t *cutwin, lline_t *curline, 
+static void measure_word(window_textbuffer_t *cutwin, lline_t *curline,
   word_t *curword);
-static void win_textbuffer_line_cancel(window_textbuffer_t *cutwin, 
+static void win_textbuffer_line_cancel(window_textbuffer_t *cutwin,
   event_t *ev);
 static void win_textbuffer_setstyle(window_textbuffer_t *cutwin,
-  long pos, int stype, 
-  glui32 attr, glui32 linkid, glui32 image, int imagealign, 
+  long pos, int stype,
+  glui32 attr, glui32 linkid, glui32 image, int imagealign,
   glui32 imagewidth, glui32 imageheight);
 static void readd_lineheights(window_textbuffer_t *cutwin, long lx);
 
@@ -164,16 +164,16 @@ static void delete_imageword(imageword_t *iwd);
 
 window_textbuffer_t *win_textbuffer_create(window_t *win)
 {
-  window_textbuffer_t *res = 
+  window_textbuffer_t *res =
     (window_textbuffer_t *)malloc(sizeof(window_textbuffer_t));
   if (!res)
     return NULL;
-  
+
   res->owner = win;
-  
+
   gli_stylehints_for_window(wintype_TextBuffer, &(res->hints));
   gli_styles_compute(&(res->font), &(res->hints));
-  
+
   res->char_size = 256;
   res->charbuf = (char *)malloc(sizeof(char) * res->char_size);
   res->numchars = 0;
@@ -183,7 +183,7 @@ window_textbuffer_t *win_textbuffer_create(window_t *win)
   res->numstyles = 1;
   res->stylelist[0].pos = 0;
   res->stylelist[0].stype = stype_Text;
-  res->stylelist[0].attr = style_Normal; 
+  res->stylelist[0].attr = style_Normal;
   res->stylelist[0].linkid = 0;
   res->stylelist[0].image = 0;
   res->stylelist[0].imagealign = 0;
@@ -221,7 +221,7 @@ window_textbuffer_t *win_textbuffer_create(window_t *win)
 
   res->lastseenline = 0;
   res->isclear = TRUE;
-  
+
   res->linesonpage = 0;
   res->lineoffset_size = 80;
   res->lineoffsetlist = (int *)malloc(res->lineoffset_size * sizeof(int));
@@ -231,7 +231,7 @@ window_textbuffer_t *win_textbuffer_create(window_t *win)
   res->buffer = NULL;
   res->buflen = 0;
   res->inputfence = 0;
-  
+
   return res;
 }
 
@@ -241,7 +241,7 @@ void win_textbuffer_destroy(struct window_textbuffer_struct *dwin)
 
   if (dwin->buffer) {
     if (gli_unregister_arr) {
-      (*gli_unregister_arr)(dwin->buffer, dwin->buflen, "&+#!Cn", 
+      (*gli_unregister_arr)(dwin->buffer, dwin->buflen, "&+#!Cn",
 	dwin->inarrayrock);
     }
     dwin->buffer = NULL;
@@ -254,15 +254,15 @@ void win_textbuffer_destroy(struct window_textbuffer_struct *dwin)
     free(dwin->history);
     dwin->history = NULL;
   }
-  
+
   if (dwin->stylelist) {
     free(dwin->stylelist);
     dwin->stylelist = NULL;
   }
-  
+
   if (dwin->linelist) {
     long lx, wx;
-    
+
     for (lx=0; lx<dwin->numlines; lx++) {
       word_t *thisword;
       for (wx=0, thisword=dwin->linelist[lx].wordlist;
@@ -288,32 +288,32 @@ void win_textbuffer_destroy(struct window_textbuffer_struct *dwin)
     free(dwin->linelist);
     dwin->linelist = NULL;
   }
-  
+
   if (dwin->tmplinelist) {
     /* don't free contents; they're owned by linelist. */
     free(dwin->tmplinelist);
     dwin->tmplinelist = NULL;
   }
-  
+
   if (dwin->charbuf) {
     free(dwin->charbuf);
     dwin->charbuf = NULL;
   }
-  
+
   free(dwin);
 }
 
 void win_textbuffer_rearrange(window_t *win, XRectangle *box)
 {
   window_textbuffer_t *cutwin = win->data;
-  
+
   int xpos = box->x;
-  int ypos = box->y; 
-  int width = box->width; 
+  int ypos = box->y;
+  int width = box->width;
   int height = box->height;
-  
+
   cutwin->bbox = *box;
-  
+
   cutwin->textwin_x = xpos+SIDEMARGIN+prefs.textbuffer.marginx;
   cutwin->textwin_y = ypos+prefs.textbuffer.marginy;
   cutwin->textwin_w = width-2*SIDEMARGIN-BARWIDTH-2*prefs.textbuffer.marginx;
@@ -335,7 +335,7 @@ void win_textbuffer_rearrange(window_t *win, XRectangle *box)
   cutwin->dirtyend = cutwin->numchars;
   cutwin->dirtydelta = 0;
 
-  cutwin->linesonpage = 0; 
+  cutwin->linesonpage = 0;
   cutwin->lineoffsetlist[0] = 0;
   /* This will be set to something real later. */
 }
@@ -390,7 +390,7 @@ void win_textbuffer_redraw(window_t *win)
   gli_draw_window_margin(&(cutwin->font.backcolor),
     cutwin->bbox.x, cutwin->bbox.y,
     cutwin->bbox.width-BARWIDTH, cutwin->bbox.height,
-    cutwin->textwin_x-SIDEMARGIN, cutwin->textwin_y, 
+    cutwin->textwin_x-SIDEMARGIN, cutwin->textwin_y,
     cutwin->textwin_w+2*SIDEMARGIN, cutwin->textwin_h);
 
   xweg_draw_scrollbar(&cutwin->scrollbar);
@@ -400,14 +400,14 @@ void win_textbuffer_redraw(window_t *win)
     win_textbuffer_layout(cutwin);
     return;
   }
-  
+
   /* this assumes that an exposure event will not come in
      between a data update and an win_textbuffer_layout call. */
   /*flip_selection(cutwin->dotpos, cutwin->dotlen);*/
   redrawtext(cutwin, 0, -1, -1);
   flip_selection(cutwin, cutwin->dotpos, cutwin->dotlen);
 
-  xweg_adjust_scrollbar(&cutwin->scrollbar, cutwin->numlines, 
+  xweg_adjust_scrollbar(&cutwin->scrollbar, cutwin->numlines,
     cutwin->scrollline, cutwin->linesonpage);
 }
 
@@ -434,11 +434,11 @@ void win_textbuffer_setfocus(window_t *win, int turnon)
     }
   }
 }
-void win_textbuffer_init_line(window_t *win, char *buffer, int buflen, 
+void win_textbuffer_init_line(window_t *win, char *buffer, int buflen,
   int readpos)
 {
   window_textbuffer_t *cutwin = win->data;
-  
+
   cutwin->buflen = buflen;
   cutwin->buffer = buffer;
 
@@ -447,7 +447,7 @@ void win_textbuffer_init_line(window_t *win, char *buffer, int buflen,
     cutwin->inputfence = cutwin->numchars;
     cutwin->originalattr = cutwin->stylelist[cutwin->numstyles-1].attr;
     win_textbuffer_set_style_text(cutwin, style_Input);
-    win_textbuffer_replace(cutwin, cutwin->inputfence, 0, 
+    win_textbuffer_replace(cutwin, cutwin->inputfence, 0,
       cutwin->buffer, readpos);
     win_textbuffer_layout(cutwin);
   }
@@ -470,10 +470,10 @@ void win_textbuffer_cancel_line(window_t *win, event_t *ev)
   win_textbuffer_line_cancel(cutwin, ev);
 }
 
-void win_textbuffer_perform_click(window_t *win, int dir, XPoint *pt, 
+void win_textbuffer_perform_click(window_t *win, int dir, XPoint *pt,
   int butnum, int clicknum, unsigned int state)
 {
-  window_textbuffer_t *cutwin = win->data; 
+  window_textbuffer_t *cutwin = win->data;
   long pos, hitpos;
   long px, px2;
 
@@ -485,8 +485,8 @@ void win_textbuffer_perform_click(window_t *win, int dir, XPoint *pt,
       cutwin->drag_inscroll = FALSE;
 
     if (cutwin->drag_inscroll) {
-      xweg_click_scrollbar(&cutwin->scrollbar, dir, pt, butnum, 
-	clicknum, state, 
+      xweg_click_scrollbar(&cutwin->scrollbar, dir, pt, butnum,
+	clicknum, state,
 	cutwin->numlines, cutwin->scrollline, cutwin->linesonpage);
     }
     else {
@@ -550,8 +550,8 @@ void win_textbuffer_perform_click(window_t *win, int dir, XPoint *pt,
   }
   else if (dir == mouse_Move) {
     if (cutwin->drag_inscroll) {
-      xweg_click_scrollbar(&cutwin->scrollbar, dir, pt, butnum, 
-	clicknum, state, 
+      xweg_click_scrollbar(&cutwin->scrollbar, dir, pt, butnum,
+	clicknum, state,
 	cutwin->numlines, cutwin->scrollline, cutwin->linesonpage);
     }
     else {
@@ -591,7 +591,7 @@ void win_textbuffer_perform_click(window_t *win, int dir, XPoint *pt,
 	pos = find_pos_by_loc(cutwin, pt->x, pt->y, &hitpos);
 	if (pos == cutwin->drag_firstbeg) {
 	  cutwin->owner->hyperlink_request = FALSE;
-	  eventloop_setevent(evtype_Hyperlink, cutwin->owner, 
+	  eventloop_setevent(evtype_Hyperlink, cutwin->owner,
 	    cutwin->drag_firstlink, 0);
 	  /* suppressdblclick = TRUE; */
 	}
@@ -647,10 +647,10 @@ static long fore_to_nonwhite(window_textbuffer_t *cutwin, long pos)
   return pos;
 }
 
-/* Coordinates are in screen lines. If num < 0, go to the end. clearnum is the 
-   number of lines to clear (may be to a notional line); if 0, don't clear at 
+/* Coordinates are in screen lines. If num < 0, go to the end. clearnum is the
+   number of lines to clear (may be to a notional line); if 0, don't clear at
    all; if -1, clear whole window. */
-static void redrawtext(window_textbuffer_t *cutwin, long beg, long num, 
+static void redrawtext(window_textbuffer_t *cutwin, long beg, long num,
   int clearnum)
 {
   long lx, wx, end;
@@ -667,7 +667,7 @@ static void redrawtext(window_textbuffer_t *cutwin, long beg, long num,
   textwinbox.y = textwin_y = cutwin->textwin_y;
   textwinbox.width = textwin_w = cutwin->textwin_w;
   textwinbox.height = textwin_h = cutwin->textwin_h;
-  
+
   if (num<0)
     end = cutwin->numlines;
   else {
@@ -706,13 +706,13 @@ static void redrawtext(window_textbuffer_t *cutwin, long beg, long num,
     }
     if (ypos < ypos2) {
       xglk_clearfor_string(&(cutwin->font.backcolor),
-	textwin_x-SIDEMARGIN, ypos, 
+	textwin_x-SIDEMARGIN, ypos,
 	textwin_w+2*SIDEMARGIN, ypos2-ypos);
     }
   }
 
   /* Back up and draw any hanging images above. */
-  if (beg < end 
+  if (beg < end
     && (cutwin->linelist[beg].leftindent || cutwin->linelist[beg].rightindent)) {
     int stillleft = (cutwin->linelist[beg].leftindent != 0);
     int stillright = (cutwin->linelist[beg].rightindent != 0);
@@ -732,14 +732,14 @@ static void redrawtext(window_textbuffer_t *cutwin, long beg, long num,
 	  imageword_t *iwd = thisword->u.image;
 	  if (iwd) {
 	    if (iwd->imagealign == imagealign_MarginLeft) {
-	      if (stillleft) 
-		picture_draw(iwd->pic, xiowin, textwin_x+iwd->pos, ypos, 
+	      if (stillleft)
+		picture_draw(iwd->pic, xiowin, textwin_x+iwd->pos, ypos,
 		  iwd->width, iwd->height, &textwinbox);
 	    }
 	    else if (iwd->imagealign == imagealign_MarginRight) {
 	      if (stillright)
-		picture_draw(iwd->pic, xiowin, 
-		  (textwin_x+textwin_w-iwd->width)-iwd->pos, 
+		picture_draw(iwd->pic, xiowin,
+		  (textwin_x+textwin_w-iwd->width)-iwd->pos,
 		  ypos, iwd->width, iwd->height, &textwinbox);
 	    }
 	  }
@@ -765,30 +765,30 @@ static void redrawtext(window_textbuffer_t *cutwin, long beg, long num,
 	imageword_t *iwd = thisword->u.image;
 	if (iwd) {
 	  if (iwd->imagealign == imagealign_MarginLeft) {
-	    picture_draw(iwd->pic, xiowin, textwin_x+iwd->pos, ypos, 
+	    picture_draw(iwd->pic, xiowin, textwin_x+iwd->pos, ypos,
 	      iwd->width, iwd->height, &textwinbox);
 	  }
 	  else if (iwd->imagealign == imagealign_MarginRight) {
-	    picture_draw(iwd->pic, xiowin, 
-	      (textwin_x+textwin_w-iwd->width)-iwd->pos, 
+	    picture_draw(iwd->pic, xiowin,
+	      (textwin_x+textwin_w-iwd->width)-iwd->pos,
 	      ypos, iwd->width, iwd->height, &textwinbox);
 	  }
 	  else {
-	    picture_draw(iwd->pic, xiowin, 
-	      xpos, ypos+thisline->off-iwd->pos, 
+	    picture_draw(iwd->pic, xiowin,
+	      xpos, ypos+thisline->off-iwd->pos,
 	      iwd->width, iwd->height, &textwinbox);
 	  }
 	}
       }
       else if (thisword->stype == stype_Text) {
-	if (gclist[thisword->attr].backcolor.pixel 
+	if (gclist[thisword->attr].backcolor.pixel
 	  != cutwin->font.backcolor.pixel) {
-	  xglk_clearfor_string(&(gclist[thisword->attr].backcolor), 
+	  xglk_clearfor_string(&(gclist[thisword->attr].backcolor),
 	    xpos, ypos, thisword->width, thisline->height);
 	}
-	xglk_draw_string(&(gclist[thisword->attr]), 
+	xglk_draw_string(&(gclist[thisword->attr]),
 	  (thisword->linkid != 0), thisword->width,
-	  xpos, ypos+thisline->off, 
+	  xpos, ypos+thisline->off,
 	  cutwin->charbuf+thisline->pos+thisword->pos, thisword->len);
       }
       xpos += thisword->width;
@@ -823,7 +823,7 @@ static void scroll_to(window_textbuffer_t *cutwin, long newscrollline)
     cutwin->scrollpos = 0;
   else
     cutwin->scrollpos = cutwin->linelist[newscrollline].pos;
-  
+
   if (cutwin->scrollline != newscrollline) {
     oldscrollline = cutwin->scrollline;
     if (!xiobackstore
@@ -846,8 +846,8 @@ static void scroll_to(window_textbuffer_t *cutwin, long newscrollline)
 	ypos2 = cutwin->textwin_y;
 	yhgt = cutwin->textwin_y + cutwin->textwin_h - ypos1;
 	XCopyArea(xiodpy, xiowin, xiowin, gcfore,
-	  cutwin->textwin_x-SIDEMARGIN, ypos1, 
-	  cutwin->textwin_w+2*SIDEMARGIN, yhgt, 
+	  cutwin->textwin_x-SIDEMARGIN, ypos1,
+	  cutwin->textwin_w+2*SIDEMARGIN, yhgt,
 	  cutwin->textwin_x-SIDEMARGIN, ypos2);
 	oldlop = cutwin->linesonpage;
 	readd_lineheights(cutwin, cutwin->scrollline);
@@ -862,11 +862,11 @@ static void scroll_to(window_textbuffer_t *cutwin, long newscrollline)
 	ypos1 = cutwin->textwin_y;
 	yhgt = cutwin->textwin_y + cutwin->textwin_h - ypos2;
 	XCopyArea(xiodpy, xiowin, xiowin, gcfore,
-	  cutwin->textwin_x-SIDEMARGIN, ypos1, 
-	  cutwin->textwin_w+2*SIDEMARGIN, yhgt, 
+	  cutwin->textwin_x-SIDEMARGIN, ypos1,
+	  cutwin->textwin_w+2*SIDEMARGIN, yhgt,
 	  cutwin->textwin_x-SIDEMARGIN, ypos2);
 	readd_lineheights(cutwin, cutwin->scrollline);
-	redrawtext(cutwin, newscrollline, (oldscrollline-newscrollline), 
+	redrawtext(cutwin, newscrollline, (oldscrollline-newscrollline),
 	  (oldscrollline-newscrollline));
       }
       flip_selection(cutwin, cutwin->dotpos, cutwin->dotlen);
@@ -874,18 +874,18 @@ static void scroll_to(window_textbuffer_t *cutwin, long newscrollline)
     xweg_adjust_scrollbar(&cutwin->scrollbar, cutwin->numlines,
       cutwin->scrollline, cutwin->linesonpage);
   }
-  
+
   if (cutwin->lastseenline < cutwin->scrollline) {
     cutwin->lastseenline = cutwin->scrollline;
   }
   if (cutwin->lastseenline >= cutwin->numlines - cutwin->linesonpage) {
-    /* this is wrong -- linesonpage doesn't correctly measure lines at 
+    /* this is wrong -- linesonpage doesn't correctly measure lines at
        the end. */
     cutwin->lastseenline = cutwin->numlines;
   }
 }
 
-static void refiddle_selection(window_textbuffer_t *cutwin, 
+static void refiddle_selection(window_textbuffer_t *cutwin,
   long oldpos, long oldlen, long newpos, long newlen)
 {
   if (oldlen==0 || newlen==0 || oldpos<0 || newpos<0) {
@@ -941,7 +941,7 @@ static void flip_selection(window_textbuffer_t *cutwin, long dpos, long dlen)
       || lx-cutwin->scrollline >= cutwin->linesonpage)
       return;
     height = cutwin->linelist[lx].height;
-    xglk_draw_dot(cutwin->textwin_x + xpos, 
+    xglk_draw_dot(cutwin->textwin_x + xpos,
       cutwin->textwin_y + ypos + height, height);
   }
   else {
@@ -954,8 +954,8 @@ static void flip_selection(window_textbuffer_t *cutwin, long dpos, long dlen)
 	return;
       height = cutwin->linelist[lx].height;
       if (xpos < xpos2) {
-	XFillRectangle(xiodpy, xiowin, gcflip, 
-	  xpos+cutwin->textwin_x, ypos+cutwin->textwin_y, 
+	XFillRectangle(xiodpy, xiowin, gcflip,
+	  xpos+cutwin->textwin_x, ypos+cutwin->textwin_y,
 	  xpos2-xpos, height);
       }
     }
@@ -968,8 +968,8 @@ static void flip_selection(window_textbuffer_t *cutwin, long dpos, long dlen)
 	height = cutwin->linelist[lx].height;
 	if (xpos < cutwin->textwin_w) {
 	  /* first partial line */
-	  XFillRectangle(xiodpy, xiowin, gcflip, 
-	    xpos+cutwin->textwin_x, ypos+cutwin->textwin_y, 
+	  XFillRectangle(xiodpy, xiowin, gcflip,
+	    xpos+cutwin->textwin_x, ypos+cutwin->textwin_y,
 	    cutwin->textwin_w-xpos, height);
 	}
 	ybody = ypos + cutwin->linelist[lx].height;
@@ -989,23 +989,23 @@ static void flip_selection(window_textbuffer_t *cutwin, long dpos, long dlen)
       }
       if (ybody < ybody2) {
 	/* main body */
-	XFillRectangle(xiodpy, xiowin, gcflip, 
-	  cutwin->textwin_x, ybody+cutwin->textwin_y, 
+	XFillRectangle(xiodpy, xiowin, gcflip,
+	  cutwin->textwin_x, ybody+cutwin->textwin_y,
 	  cutwin->textwin_w, ybody2-ybody);
       }
       if (xpos2 > 0 && height) {
 	/* last partial line */
-	XFillRectangle(xiodpy, xiowin, gcflip, 
-	  cutwin->textwin_x, ypos2+cutwin->textwin_y, 
+	XFillRectangle(xiodpy, xiowin, gcflip,
+	  cutwin->textwin_x, ypos2+cutwin->textwin_y,
 	  xpos2, height);
       }
     }
   }
 }
 
-/* push lines from tmplinelist[0..newnum) in place of 
+/* push lines from tmplinelist[0..newnum) in place of
    linelist[oldbeg..oldend) */
-static void slapover(window_textbuffer_t *cutwin, long newnum, 
+static void slapover(window_textbuffer_t *cutwin, long newnum,
   long oldbeg, long oldend)
 {
   long wx, lx;
@@ -1015,7 +1015,7 @@ static void slapover(window_textbuffer_t *cutwin, long newnum,
   if (newnumlines >= cutwin->lines_size) {
     while (newnumlines >= cutwin->lines_size)
       cutwin->lines_size *= 2;
-    cutwin->linelist = (lline_t *)realloc(cutwin->linelist, 
+    cutwin->linelist = (lline_t *)realloc(cutwin->linelist,
       sizeof(lline_t) * cutwin->lines_size);
   }
 
@@ -1069,11 +1069,11 @@ static long find_pos_by_loc(window_textbuffer_t *cutwin, int xpos, int ypos,
 
   *truepos = -1;
 
-  if (ypos < 0) 
+  if (ypos < 0)
     linenum = (-1) - ((-1)-ypos / cutwin->font.lineheight);
-  else if (ypos >= cutwin->lineoffsetlist[cutwin->linesonpage]) 
-    linenum = cutwin->linesonpage 
-      + (ypos - cutwin->lineoffsetlist[cutwin->linesonpage]) 
+  else if (ypos >= cutwin->lineoffsetlist[cutwin->linesonpage])
+    linenum = cutwin->linesonpage
+      + (ypos - cutwin->lineoffsetlist[cutwin->linesonpage])
       / cutwin->font.lineheight;
   else {
     long min = 0;
@@ -1142,7 +1142,7 @@ static long find_pos_by_loc(window_textbuffer_t *cutwin, int xpos, int ypos,
 	  imageword_t *iwd = curword->u.image;
 	  if (iwd) {
 	    if (iwd->imagealign == imagealign_MarginRight
-	      && xpos >= (cutwin->textwin_w-iwd->pos)-iwd->width 
+	      && xpos >= (cutwin->textwin_w-iwd->pos)-iwd->width
 	      && xpos < cutwin->textwin_w-iwd->pos
 	      && ypos >= ylinepos && ypos < ylinepos+iwd->height) {
 	      *truepos = thisline->pos + curword->pos;
@@ -1194,7 +1194,7 @@ static long find_pos_by_loc(window_textbuffer_t *cutwin, int xpos, int ypos,
   else if (curword->stype == stype_Image) {
     imageword_t *iwd = curword->u.image;
     if (iwd) {
-      if (iwd->imagealign != imagealign_MarginLeft 
+      if (iwd->imagealign != imagealign_MarginLeft
 	&& iwd->imagealign != imagealign_MarginRight) {
 	/* Just hit the beginning or end of the word. */
 	*truepos = curline->pos + curword->pos;
@@ -1205,16 +1205,16 @@ static long find_pos_by_loc(window_textbuffer_t *cutwin, int xpos, int ypos,
       }
     }
   }
-  
+
   /* Just the beginning. */
   *truepos = curline->pos + curword->pos;
   return curline->pos + curword->pos;
 }
 
-/* returns the last line such that pos >= line.pos. guessline is a guess 
-   to start searching at; -1 means end of file. Can return -1 if pos is 
+/* returns the last line such that pos >= line.pos. guessline is a guess
+   to start searching at; -1 means end of file. Can return -1 if pos is
    before the start of the layout. */
-static long find_line_by_pos(window_textbuffer_t *cutwin, long pos, 
+static long find_line_by_pos(window_textbuffer_t *cutwin, long pos,
   long guessline)
 {
   long lx;
@@ -1222,7 +1222,7 @@ static long find_line_by_pos(window_textbuffer_t *cutwin, long pos,
   if (guessline < 0 || guessline >= cutwin->numlines)
     guessline = cutwin->numlines-1;
 
-  if (guessline < cutwin->numlines-1 
+  if (guessline < cutwin->numlines-1
     && cutwin->linelist[guessline].pos <= pos) {
     for (lx=guessline; lx<cutwin->numlines; lx++) {
       if (cutwin->linelist[lx].pos > pos)
@@ -1241,7 +1241,7 @@ static long find_line_by_pos(window_textbuffer_t *cutwin, long pos,
 }
 
 /* returns values relative to textwin origin, at top of line. */
-static long find_loc_by_pos(window_textbuffer_t *cutwin, long pos, 
+static long find_loc_by_pos(window_textbuffer_t *cutwin, long pos,
   int *xposret, int *yposret)
 {
   long lx, lx2;
@@ -1260,7 +1260,7 @@ static long find_loc_by_pos(window_textbuffer_t *cutwin, long pos,
   if (lx2 >= cutwin->linesonpage) {
     /* or after */
     *xposret = 0;
-    *yposret = cutwin->lineoffsetlist[cutwin->linesonpage] 
+    *yposret = cutwin->lineoffsetlist[cutwin->linesonpage]
       + (lx2 - cutwin->linesonpage) * cutwin->font.lineheight;
     return lx;
   }
@@ -1291,7 +1291,7 @@ static long find_loc_by_pos(window_textbuffer_t *cutwin, long pos,
   else if (curword->stype == stype_Break) {
     /* leave it */
   }
-  
+
   *xposret = atpos;
   return lx;
 }
@@ -1299,11 +1299,11 @@ static long find_loc_by_pos(window_textbuffer_t *cutwin, long pos,
 static void readd_lineheights(window_textbuffer_t *cutwin, long lx)
 {
   long jx, lx2;
-  
+
   lx2 = lx-cutwin->scrollline;
   if (lx2 > cutwin->linesonpage)
     return;
-  
+
   for (; lx < cutwin->numlines; lx++, lx2++) {
     jx = cutwin->lineoffsetlist[lx2] + cutwin->linelist[lx].height;
     if (jx > cutwin->textwin_h)
@@ -1319,7 +1319,7 @@ static void readd_lineheights(window_textbuffer_t *cutwin, long lx)
 }
 
 /* Text words only, please. */
-static void measure_word(window_textbuffer_t *cutwin, lline_t *curline, 
+static void measure_word(window_textbuffer_t *cutwin, lline_t *curline,
   word_t *curword)
 {
   int cx;
@@ -1350,7 +1350,7 @@ static void measure_word(window_textbuffer_t *cutwin, lline_t *curline,
 void win_textbuffer_clear_window(window_textbuffer_t *cutwin)
 {
   int ix;
-  
+
   if (1) {
     /* normal clear */
     win_textbuffer_delete_start(cutwin, cutwin->numlines);
@@ -1363,7 +1363,7 @@ void win_textbuffer_clear_window(window_textbuffer_t *cutwin)
 	win_textbuffer_add(cutwin, '\n', -1);
     }
   }
-  
+
   cutwin->isclear = TRUE;
 }
 
@@ -1379,14 +1379,14 @@ void win_textbuffer_add(window_textbuffer_t *cutwin, char ch, long pos)
 }
 
 /* update data, adjusting dot and styles as necessary. */
-void win_textbuffer_replace(window_textbuffer_t *cutwin, long pos, long oldlen, 
+void win_textbuffer_replace(window_textbuffer_t *cutwin, long pos, long oldlen,
   char *buf, long newlen)
 {
   long newnumchars;
 
   newnumchars = cutwin->numchars-oldlen+newlen;
   if (newnumchars >= cutwin->char_size) {
-    while (newnumchars >= cutwin->char_size) 
+    while (newnumchars >= cutwin->char_size)
       cutwin->char_size *= 2;
     cutwin->charbuf = (char *)realloc(cutwin->charbuf, sizeof(char) * cutwin->char_size);
   }
@@ -1450,36 +1450,36 @@ void win_textbuffer_set_style_text(window_textbuffer_t *cutwin, glui32 attr)
   style_t *sty = &(cutwin->stylelist[cutwin->numstyles-1]);
   if (attr == 0xFFFFFFFF)
     attr = sty->attr;
-  win_textbuffer_setstyle(cutwin, -1, stype_Text, attr, sty->linkid, 
+  win_textbuffer_setstyle(cutwin, -1, stype_Text, attr, sty->linkid,
     0, 0, 0, 0);
 }
 
-void win_textbuffer_set_style_image(window_textbuffer_t *cutwin, 
-  glui32 image, int imagealign, 
+void win_textbuffer_set_style_image(window_textbuffer_t *cutwin,
+  glui32 image, int imagealign,
   glui32 imagewidth, glui32 imageheight)
 {
   style_t *sty = &(cutwin->stylelist[cutwin->numstyles-1]);
-  win_textbuffer_setstyle(cutwin, -1, stype_Image, sty->attr, sty->linkid, 
+  win_textbuffer_setstyle(cutwin, -1, stype_Image, sty->attr, sty->linkid,
     image, imagealign, imagewidth, imageheight);
 }
 
 void win_textbuffer_set_style_break(window_textbuffer_t *cutwin)
 {
   style_t *sty = &(cutwin->stylelist[cutwin->numstyles-1]);
-  win_textbuffer_setstyle(cutwin, -1, stype_Break, sty->attr, sty->linkid, 
+  win_textbuffer_setstyle(cutwin, -1, stype_Break, sty->attr, sty->linkid,
     0, 0, 0, 0);
 }
 
-void win_textbuffer_set_style_link(window_textbuffer_t *cutwin, 
+void win_textbuffer_set_style_link(window_textbuffer_t *cutwin,
   glui32 linkid)
 {
   style_t *sty = &(cutwin->stylelist[cutwin->numstyles-1]);
-  win_textbuffer_setstyle(cutwin, -1, sty->stype, sty->attr, linkid, 
+  win_textbuffer_setstyle(cutwin, -1, sty->stype, sty->attr, linkid,
     sty->image, sty->imagealign, sty->imagewidth, sty->imageheight);
 }
 
-static void win_textbuffer_setstyle(window_textbuffer_t *cutwin, 
-  long pos, int stype, 
+static void win_textbuffer_setstyle(window_textbuffer_t *cutwin,
+  long pos, int stype,
   glui32 attr, glui32 linkid, glui32 image, int imagealign,
   glui32 imagewidth, glui32 imageheight)
 {
@@ -1507,12 +1507,12 @@ static void win_textbuffer_setstyle(window_textbuffer_t *cutwin,
     sx++;
     if (cutwin->numstyles+1 >= cutwin->styles_size) {
       cutwin->styles_size *= 2;
-      cutwin->stylelist = (style_t *)realloc(cutwin->stylelist, 
+      cutwin->stylelist = (style_t *)realloc(cutwin->stylelist,
 	sizeof(style_t) * cutwin->styles_size);
     }
     cutwin->numstyles++;
     if (sx+1 < cutwin->numstyles) {
-      memmove(&cutwin->stylelist[sx+1], &cutwin->stylelist[sx], 
+      memmove(&cutwin->stylelist[sx+1], &cutwin->stylelist[sx],
 	sizeof(style_t) * (cutwin->numstyles-sx));
     }
     cutwin->stylelist[sx].pos = pos;
@@ -1538,7 +1538,7 @@ static void win_textbuffer_setstyle(window_textbuffer_t *cutwin,
 void win_textbuffer_end_visible(window_textbuffer_t *cutwin)
 {
   if (cutwin->scrollline < cutwin->numlines-cutwin->linesonpage) {
-    /* this is wrong -- linesonpage doesn't correctly measure lines 
+    /* this is wrong -- linesonpage doesn't correctly measure lines
        at the end. */
     scroll_to(cutwin, cutwin->numlines-cutwin->linesonpage);
   }
@@ -1551,10 +1551,10 @@ void win_textbuffer_set_paging(window_textbuffer_t *cutwin, int forcetoend)
 
   if (cutwin->lastseenline == cutwin->numlines)
     return;
-  
-  if (!forcetoend 
+
+  if (!forcetoend
     && cutwin->lastseenline - 0 < cutwin->numlines - cutwin->linesonpage) {
-    /* this is wrong -- linesonpage doesn't correctly measure lines 
+    /* this is wrong -- linesonpage doesn't correctly measure lines
        at the end. */
     /* scroll lastseenline to top, stick there */
     val = cutwin->lastseenline;
@@ -1581,7 +1581,7 @@ int win_textbuffer_is_paging(window_t *win)
   window_textbuffer_t *dwin = win->data;
 
   if (dwin->lastseenline < dwin->numlines - dwin->linesonpage) {
-    /* this is wrong -- linesonpage doesn't correctly measure lines 
+    /* this is wrong -- linesonpage doesn't correctly measure lines
        at the end. */
     return TRUE;
   }
@@ -1602,12 +1602,12 @@ void win_textbuffer_delete_start(window_textbuffer_t *cutwin, long num)
 
   if (cutwin->numlines==0)
     return;
-  
+
   if (num < cutwin->numlines)
     delchars = cutwin->linelist[num].pos;
   else
     delchars = cutwin->numchars;
-  
+
   if (!delchars)
     return;
 
@@ -1635,7 +1635,7 @@ void win_textbuffer_delete_start(window_textbuffer_t *cutwin, long num)
   }
 
   /* chars */
-  if (cutwin->numchars > delchars) 
+  if (cutwin->numchars > delchars)
     memmove(&cutwin->charbuf[0], &cutwin->charbuf[delchars], sizeof(char) * (cutwin->numchars-delchars));
   cutwin->numchars -= delchars;
 
@@ -1714,7 +1714,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
 
   int direction;
   int wordwidth;
-  
+
   static long lastline = 0; /* last line dirtied */
 
   /* Shut up compiler warnings */
@@ -1722,9 +1722,9 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
   jx = 0;
 
   if (cutwin->dirtybeg < 0 || cutwin->dirtyend < 0) {
-    if (cutwin->lastdotpos != cutwin->dotpos 
+    if (cutwin->lastdotpos != cutwin->dotpos
       || cutwin->lastdotlen != cutwin->dotlen) {
-      refiddle_selection(cutwin, cutwin->lastdotpos, 
+      refiddle_selection(cutwin, cutwin->lastdotpos,
 	cutwin->lastdotlen, cutwin->dotpos, cutwin->dotlen);
       /*flip_selection(cutwin, cutwin->lastdotpos, cutwin->lastdotlen);*/
       cutwin->lastdotpos = cutwin->dotpos;
@@ -1787,7 +1787,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
   tmpl = 0;
   prevflags = 0;
 
-  while (startpos<cutwin->numchars 
+  while (startpos<cutwin->numchars
     && !(startpos >= cutwin->dirtyend && cutwin->charbuf[startpos]=='\n')) {
     lline_t *thisline;
     long tmpw, tmpwords_size;
@@ -1799,14 +1799,14 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
     if (tmpl+1 >= cutwin->tmplines_size) {
       /* the +1 allows the extra blank line at the end */
       cutwin->tmplines_size *= 2;
-      cutwin->tmplinelist = (lline_t *)realloc(cutwin->tmplinelist, 
+      cutwin->tmplinelist = (lline_t *)realloc(cutwin->tmplinelist,
 	sizeof(lline_t) * cutwin->tmplines_size);
     }
     thisline = (&cutwin->tmplinelist[tmpl]);
     thisline->flags = prevflags;
     thisline->height = 64; /* initially silly values */
     thisline->off = 48;
-    thisline->indent = cutwin->font.baseindent + leftindent; 
+    thisline->indent = cutwin->font.baseindent + leftindent;
     /* indent will be added to when lineattr is known. */
     lineattrknown = FALSE;
     lineattr = style_Normal;
@@ -1834,7 +1834,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
 	  nextstylepos = cutwin->stylelist[styx+1].pos;
 	curattr = &(cutwin->stylelist[styx]);
       }
-      
+
       if (!lineattrknown) {
 	lineattr = curattr->attr;
 	thisline->indent += cutwin->font.gc[lineattr].indent;
@@ -1847,7 +1847,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
 
       if (tmpw >= tmpwords_size) {
 	tmpwords_size *= 2;
-	thisline->wordlist = (word_t *)realloc(thisline->wordlist, 
+	thisline->wordlist = (word_t *)realloc(thisline->wordlist,
 	  tmpwords_size * sizeof(word_t));
       }
       thisword = (&thisline->wordlist[tmpw]);
@@ -1859,12 +1859,12 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
       if (curattr->stype == stype_Text) {
 	thisword->stype = stype_Text;
 	thisword->u.letterpos = NULL;
-	for (jx=ix; 
-	     jx<cutwin->numchars && jx<nextstylepos 
-	       && cutwin->charbuf[jx]!=' ' 
-	       && cutwin->charbuf[jx]!='\n'; 
+	for (jx=ix;
+	     jx<cutwin->numchars && jx<nextstylepos
+	       && cutwin->charbuf[jx]!=' '
+	       && cutwin->charbuf[jx]!='\n';
 	     jx++);
-	wordwidth = XTextWidth(cutwin->font.gc[curattr->attr].fontstr, 
+	wordwidth = XTextWidth(cutwin->font.gc[curattr->attr].fontstr,
 	  cutwin->charbuf+ix, jx-ix);
 	/* attend to curattr->linkid? */
       }
@@ -1893,8 +1893,8 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
 	  thisword->u.image->imagealign = curattr->imagealign;
 	  thisword->u.image->pos = 0;
 	  wordwidth = thisword->u.image->width;
-	  
-	  if (curattr->imagealign == imagealign_MarginLeft 
+	
+	  if (curattr->imagealign == imagealign_MarginLeft
 	    || curattr->imagealign == imagealign_MarginRight) {
 	    int px, pcount;
 	    wordwidth = 0;
@@ -1917,7 +1917,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
 		  thisword->u.image->pos = 0;
 		}
 		else {
-		  thisword->u.image->pos = oldleftindent 
+		  thisword->u.image->pos = oldleftindent
 		    - prefs.textbuffer.marginx;
 		}
 		if (leftbelow < thisword->u.image->height)
@@ -1933,7 +1933,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
 		  thisword->u.image->pos = 0;
 		}
 		else {
-		  thisword->u.image->pos = oldrightindent 
+		  thisword->u.image->pos = oldrightindent
 		    - prefs.textbuffer.marginx;
 		}
 		if (rightbelow < thisword->u.image->height)
@@ -1947,21 +1947,21 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
       if (widthsofar + wordwidth > textwin_w - rightindent && !sidebar) {
 	prevflags = lineflag_Wrapped;
 	/* the word overflows, so throw it away -- unless it's the first
-	   word on a line. (That would lead to an infinite loop.) 
+	   word on a line. (That would lead to an infinite loop.)
 	   Of course break-words are always thrown away. */
 	if (tmpw == 0 && !(curattr->stype == stype_Break && wordwidth)
 	  /*###&& (leftindent == 0 && rightindent == 0)*/) {
 	  if (curattr->stype == stype_Text) {
-	    /* do something clever -- split the word, put first part in tmplist. 
+	    /* do something clever -- split the word, put first part in tmplist.
 	       but be sure to take at least one letter. */
 	    long letx;
 	    long wordwidthsofar = 0;
 	    for (letx=ix; letx<jx; letx++) {
-	      wordwidth = XTextWidth(cutwin->font.gc[curattr->attr].fontstr, 
+	      wordwidth = XTextWidth(cutwin->font.gc[curattr->attr].fontstr,
 		cutwin->charbuf+letx, 1);
 	      /* attend to curattr->linkid? */
-	      if (letx > ix 
-		&& widthsofar + wordwidthsofar+wordwidth 
+	      if (letx > ix
+		&& widthsofar + wordwidthsofar+wordwidth
 		> (textwin_w - rightindent)) {
 		break;
 	      }
@@ -1981,7 +1981,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
 	      thisword->u.image = NULL;
 	    }
 	  }
-	  /* ejx and spaceswidth are properly set from last word, 
+	  /* ejx and spaceswidth are properly set from last word,
 	     trim them off. */
 	  thisword--;
 	  thisword->len -= ejx;
@@ -1993,7 +1993,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
       /* figure out trailing whitespace ### for images too? */
       if (!sidebar) {
 	ejx = 0;
-	while (jx+ejx<cutwin->numchars 
+	while (jx+ejx<cutwin->numchars
 	  && jx+ejx<nextstylepos && cutwin->charbuf[jx+ejx]==' ') {
 	  ejx++;
 	}
@@ -2011,7 +2011,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
       thisword->linkid = curattr->linkid;
       thisword->width = wordwidth+spaceswidth;
       widthsofar += thisword->width;
-      tmpw++; 
+      tmpw++;
 
       ix = jx+ejx;
     }
@@ -2089,7 +2089,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
     }
     thisline->height = superscent+ascent+descent;
     thisline->off = superscent+ascent;
-    
+
     switch (cutwin->font.gc[lineattr].justify) {
     case stylehint_just_LeftRight:
       if (prevflags==lineflag_Wrapped && tmpw>1) {
@@ -2145,11 +2145,11 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
       rightindent = 0;
       thisline->rightbelow = 0;
     }
-    
+
     startpos = ix;
   } /* done laying tmp lines */
 
-  if (startpos == cutwin->numchars 
+  if (startpos == cutwin->numchars
     && (cutwin->numchars==0 || cutwin->charbuf[cutwin->numchars-1]=='\n')) {
     /* lay one more line! */
     lline_t *thisline;
@@ -2164,7 +2164,7 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
     thisline->off = font->ascent;
     thisline->indent = cutwin->font.baseindent;
     tmpl++;
-    
+
     thisline->leftindent = leftindent;
     if (leftindent && thisline->height < leftbelow) {
       leftbelow -= thisline->height;
@@ -2209,22 +2209,22 @@ static void win_textbuffer_layout(window_textbuffer_t *cutwin)
     /* disturbance is at or below the screen-top -- do nothing */
   }
   else if (cutwin->scrollpos >= startpos-cutwin->dirtydelta) {
-    /* disturbance is off top of screen -- adjust so that no difference 
+    /* disturbance is off top of screen -- adjust so that no difference
        is visible. */
     cutwin->scrollpos += cutwin->dirtydelta;
     cutwin->scrollline += (overline-overlineend) - tmpl;
-    /* the lineoffsetlist therefore doesn't need to be changed, 
+    /* the lineoffsetlist therefore doesn't need to be changed,
        theoretically. */
   }
   else {
     /* The disturbance spans the screen-top, which is annoying. */
-    cutwin->scrollpos += cutwin->dirtydelta; /* kind of strange, but 
+    cutwin->scrollpos += cutwin->dirtydelta; /* kind of strange, but
 						shouldn't cause trouble */
     if (cutwin->scrollpos >= cutwin->numchars)
       cutwin->scrollpos = cutwin->numchars-1;
     if (cutwin->scrollpos < 0)
       cutwin->scrollpos = 0;
-    cutwin->scrollline = find_line_by_pos(cutwin, cutwin->scrollpos, 
+    cutwin->scrollline = find_line_by_pos(cutwin, cutwin->scrollpos,
       cutwin->scrollline);
     needwholeredraw = TRUE;
   }
@@ -2384,13 +2384,13 @@ void xgc_buf_getchar(window_textbuffer_t *cutwin, int ch)
 void xgc_buf_insert(window_textbuffer_t *cutwin, int ch)
 {
   char realch;
-  
+
   /* ###### not perfect -- should be all typable chars */
   if (ch < 32 || ch >= 127)
     ch = ' ';
-  
+
   realch = ch;
-  
+
   if (cutwin->dotpos < cutwin->inputfence) {
     cutwin->dotpos = cutwin->numchars;
     cutwin->dotlen = 0;
@@ -2410,13 +2410,13 @@ void xgc_buf_delete(window_textbuffer_t *cutwin, int op)
 
   if (cutwin->dotpos < cutwin->inputfence)
     return;
-  
+
   if (cutwin->dotlen != 0 && (op == op_BackChar || op == op_ForeChar)) {
     win_textbuffer_replace(cutwin, cutwin->dotpos, cutwin->dotlen, "", 0);
     win_textbuffer_layout(cutwin);
     return;
   }
-  
+
   collapse_dot(cutwin);
 
   switch (op) {
@@ -2538,7 +2538,7 @@ void xgc_buf_cutbuf(window_textbuffer_t *cutwin, int op)
     win_textbuffer_replace(cutwin, cutwin->dotpos, cutwin->dotlen, "", 0);
     win_textbuffer_layout(cutwin);
     break;
-    
+
   }
 }
 
@@ -2561,7 +2561,7 @@ void xgc_buf_history(window_textbuffer_t *cutwin, int op)
       cutwin->dotlen = cutwin->history[cutwin->historypos].len;
 #else
       cutwin->historypos--;
-      win_textbuffer_replace(cutwin, cutwin->inputfence, cutwin->numchars-cutwin->inputfence, 
+      win_textbuffer_replace(cutwin, cutwin->inputfence, cutwin->numchars-cutwin->inputfence,
 	cutwin->history[cutwin->historypos].str, cutwin->history[cutwin->historypos].len);
       cutwin->dotpos = cutwin->inputfence + cutwin->history[cutwin->historypos].len;
       cutwin->dotlen = 0;
@@ -2592,7 +2592,7 @@ void xgc_buf_history(window_textbuffer_t *cutwin, int op)
 #else
       cutwin->historypos++;
       if (cutwin->historypos < cutwin->historynum) {
-	win_textbuffer_replace(cutwin, cutwin->inputfence, cutwin->numchars-cutwin->inputfence, 
+	win_textbuffer_replace(cutwin, cutwin->inputfence, cutwin->numchars-cutwin->inputfence,
 	  cutwin->history[cutwin->historypos].str, cutwin->history[cutwin->historypos].len);
 	cutwin->dotpos = cutwin->inputfence + cutwin->history[cutwin->historypos].len;
 	cutwin->dotlen = 0;
@@ -2618,7 +2618,7 @@ void xgc_buf_enter(window_textbuffer_t *cutwin, int op)
   if (op != op_Enter)
     return;
 
-  if (!cutwin->buffer) 
+  if (!cutwin->buffer)
     return;
 
   buffer = cutwin->buffer;
@@ -2634,7 +2634,7 @@ void xgc_buf_enter(window_textbuffer_t *cutwin, int op)
     buffer[len2] = ch;
     len2++;
   }
-  
+
   len = cutwin->numchars - cutwin->inputfence;
   if (len) {
     /* add to history */
@@ -2651,12 +2651,12 @@ void xgc_buf_enter(window_textbuffer_t *cutwin, int op)
 
   if (cutwin->owner->echostr) {
     window_t *oldwin = cutwin->owner;
-    /*gli_stream_echo_line(cutwin->owner->echostr, 
+    /*gli_stream_echo_line(cutwin->owner->echostr,
       cutwin->charbuf+cutwin->inputfence, len*sizeof(char));*/
-    gli_stream_echo_line(cutwin->owner->echostr, 
+    gli_stream_echo_line(cutwin->owner->echostr,
       buffer, len2*sizeof(char));
   }
-  
+
   win_textbuffer_add(cutwin, '\n', -1);
   cutwin->dotpos = cutwin->numchars;
   cutwin->dotlen = 0;
@@ -2673,19 +2673,19 @@ void xgc_buf_enter(window_textbuffer_t *cutwin, int op)
   }
 }
 
-static void win_textbuffer_line_cancel(window_textbuffer_t *cutwin, 
+static void win_textbuffer_line_cancel(window_textbuffer_t *cutwin,
   event_t *ev)
 {
   long ix, len, len2;
   long buflen;
   char *buffer;
   gidispatch_rock_t inarrayrock;
-  
+
   /* same as xgc_buf_enter(), but skip the unnecessary stuff.
       We don't need to add to history, collapse the dot, win_textbuffer_layout,
       trim the buffer, or shrink the status window. */
-  
-  if (!cutwin->buffer) 
+
+  if (!cutwin->buffer)
     return;
 
   buffer = cutwin->buffer;
@@ -2709,21 +2709,21 @@ static void win_textbuffer_line_cancel(window_textbuffer_t *cutwin,
     }*/
 
   win_textbuffer_set_style_text(cutwin, cutwin->originalattr);
-  
+
   if (cutwin->owner->echostr) {
     window_t *oldwin = cutwin->owner;
-    /*gli_stream_echo_line(cutwin->owner->echostr, 
+    /*gli_stream_echo_line(cutwin->owner->echostr,
       cutwin->charbuf+cutwin->inputfence, len*sizeof(char));*/
-    gli_stream_echo_line(cutwin->owner->echostr, 
+    gli_stream_echo_line(cutwin->owner->echostr,
       buffer, len2*sizeof(char));
   }
-  
+
   win_textbuffer_add(cutwin, '\n', -1);
   cutwin->dotpos = cutwin->numchars;
   cutwin->dotlen = 0;
   cutwin->inputfence = 0;
   win_textbuffer_layout(cutwin);
-  
+
   /* create event, and set everything blank. */
   ev->type = evtype_LineInput;
   ev->val1 = len2;

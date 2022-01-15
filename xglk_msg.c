@@ -30,7 +30,7 @@ int init_xmsg()
   if (!message)
     return FALSE;
 
-  sprintf(message, "Welcome to %s library, version %s.", 
+  sprintf(message, "Welcome to %s library, version %s.",
     LIBRARYNAME, LIBRARYVERSION);
   messagelen = strlen(message);
   messagesticky = FALSE;
@@ -51,11 +51,11 @@ void xmsg_resize(int x, int y, int wid, int hgt)
 
 void xmsg_redraw()
 {
-  XFillRectangle(xiodpy, xiowin, gcback, 
+  XFillRectangle(xiodpy, xiowin, gcback,
     bbox.x, bbox.y, bbox.width, bbox.height);
   if (message && messagelen) {
     xglk_draw_string(&(plainfonts.gc[0]), FALSE, 0,
-      bbox.x+4, bbox.y+plainfonts.lineoff+2, 
+      bbox.x+4, bbox.y+plainfonts.lineoff+2,
       message, messagelen);
   }
 
@@ -84,7 +84,7 @@ static void redrawbuf()
 static void adjustdot(int visible)
 {
   if (dotx >= 0)
-    xglk_draw_dot(dotx, bbox.y+plainfonts.lineoff+2, 
+    xglk_draw_dot(dotx, bbox.y+plainfonts.lineoff+2,
       bbox.y+plainfonts.lineoff);
 
   if (visible) {
@@ -96,7 +96,7 @@ static void adjustdot(int visible)
   }
 
   if (dotx >= 0)
-    xglk_draw_dot(dotx, bbox.y+plainfonts.lineoff+2, 
+    xglk_draw_dot(dotx, bbox.y+plainfonts.lineoff+2,
       bbox.y+plainfonts.lineoff);
 }
 
@@ -141,7 +141,7 @@ int xmsg_getline(char *prompt, char *buf, int maxlen, int *length)
 
   xmsg_set_message(prompt, TRUE);
 
-  editx = bbox.x + 10 
+  editx = bbox.x + 10
     + XTextWidth(plainfonts.gc[0].fontstr, message, messagelen);
 
   xmsg_msgmode = xmsg_mode_Line;

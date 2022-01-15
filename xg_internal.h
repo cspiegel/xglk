@@ -18,11 +18,11 @@ extern int gli_special_typable_table[keycode_MAXVAL+1];
 extern int gli_just_killed;
 
 extern gidispatch_rock_t (*gli_register_obj)(void *obj, glui32 objclass);
-extern void (*gli_unregister_obj)(void *obj, glui32 objclass, 
+extern void (*gli_unregister_obj)(void *obj, glui32 objclass,
   gidispatch_rock_t objrock);
-extern gidispatch_rock_t (*gli_register_arr)(void *array, glui32 len, 
+extern gidispatch_rock_t (*gli_register_arr)(void *array, glui32 len,
   char *typecode);
-extern void (*gli_unregister_arr)(void *array, glui32 len, char *typecode, 
+extern void (*gli_unregister_arr)(void *array, glui32 len, char *typecode,
   gidispatch_rock_t objrock);
 
 extern int init_gli_misc(void);
@@ -30,26 +30,26 @@ extern void gli_fast_exit(void);
 
 /* --- Windows --- */
 
-#define MATTE_WIDTH (6) 
+#define MATTE_WIDTH (6)
 /* This *includes* the black outline, even though that's
-   drawn by the window and not by the parent Pair. 
+   drawn by the window and not by the parent Pair.
    Also means that the matte starts one pixel outside the window. */
 #define HALF_MATTE_WIDTH (MATTE_WIDTH - (MATTE_WIDTH/2))
 /* Rounded up, you notice */
 
 struct glk_window_struct {
   glui32 type;
-  
-  window_t *parent; 
+
+  window_t *parent;
   int mouse_request, char_request, line_request, hyperlink_request;
   glui32 style, linkid;
-  
+
   void *data; /* window_pair_t, etc */
   stream_t *str;
   stream_t *echostr;
-  
+
   glui32 rock;
-  
+
   gidispatch_rock_t disprock;
   window_t *chain_next, *chain_prev;
 };
@@ -61,7 +61,7 @@ extern int init_gli_windows(void);
 extern window_t *gli_window_fixiterate(window_t *win);
 extern void gli_window_rearrange(window_t *win, XRectangle *box);
 extern void gli_window_redraw(window_t *win);
-extern void gli_window_perform_click(window_t *win, int dir, XPoint *pt, 
+extern void gli_window_perform_click(window_t *win, int dir, XPoint *pt,
   int butnum, int clicknum, unsigned int state);
 extern window_t *gli_find_window_by_point(window_t *win, XPoint *pt);
 extern XRectangle *gli_window_get_rect(window_t *win);
@@ -86,7 +86,7 @@ struct glk_stream_struct {
 
   int readable, writable;
   glui32 readcount, writecount;
-  
+
   /* for memory */
   unsigned char *buf;
   unsigned char *bufptr;
@@ -94,22 +94,22 @@ struct glk_stream_struct {
   unsigned char *bufeof;
   glui32 buflen;
   gidispatch_rock_t arrayrock;
-  
+
   /* for a window */
   window_t *win;
-  
+
   /* for a file */
   FILE *file;
-  
+
   glui32 rock;
-  
+
   gidispatch_rock_t disprock;
   stream_t *chain_next, *chain_prev;
 };
 
 extern int init_gli_streams(void);
 extern stream_t *gli_stream_open_window(window_t *win);
-extern strid_t gli_stream_open_pathname(char *pathname, int textmode, 
+extern strid_t gli_stream_open_pathname(char *pathname, int textmode,
   glui32 rock);
 extern void gli_stream_close(stream_t *str);
 extern void gli_streams_close_all(void);
@@ -124,7 +124,7 @@ struct glk_fileref_struct {
   int textmode;
 
   glui32 rock;
-  
+
   gidispatch_rock_t disprock;
   fileref_t *chain_next, *chain_prev;
 };
@@ -156,9 +156,9 @@ extern void gli_styles_compute(fontset_t *font, stylehints_t *hints);
 
 /* --- Events --- */
 
-extern void eventloop_setevent(glui32 type, window_t *win, 
-  glui32 val1, glui32 val2); 
-extern glui32 eventloop_isevent(void); 
+extern void eventloop_setevent(glui32 type, window_t *win,
+  glui32 val1, glui32 val2);
+extern glui32 eventloop_isevent(void);
 
 #define gli_event_clearevent(evp)  \
 ((evp)->type = evtype_None,    \

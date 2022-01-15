@@ -15,15 +15,15 @@ giblorb_err_t giblorb_set_resource_map(strid_t file)
      reason right now. */
   if (file->type != strtype_File)
     return giblorb_err_NotAMap;
-  
+
   err = giblorb_create_map(file, &blorbmap);
   if (err) {
     blorbmap = NULL;
     return err;
   }
-  
+
   blorbfile = file;
-  
+
   return giblorb_err_None;
 }
 
@@ -37,29 +37,29 @@ int xres_is_resource_map()
   return (blorbmap != NULL);
 }
 
-void xres_get_resource(glui32 usage, glui32 resnum, 
+void xres_get_resource(glui32 usage, glui32 resnum,
   FILE **file, long *pos, long *len, glui32 *type)
 {
   giblorb_err_t err;
   giblorb_result_t blorbres;
-  
+
   *file = NULL;
   *pos = 0;
 
   if (!blorbmap)
     return;
-  
-  err = giblorb_load_resource(blorbmap, giblorb_method_FilePos, 
+
+  err = giblorb_load_resource(blorbmap, giblorb_method_FilePos,
     &blorbres, usage, resnum);
   if (err)
     return;
 
   *file = blorbfile->file;
   if (pos)
-    *pos = blorbres.data.startpos;  
+    *pos = blorbres.data.startpos;
   if (len)
-    *len = blorbres.length; 
-  
+    *len = blorbres.length;
+
   if (type) {
     *type = blorbres.chunktype;
   }

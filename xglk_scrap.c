@@ -33,7 +33,7 @@ void xglk_clear_scrap()
     free(scrap);
     scrap = NULL;
     scraplen = 0;
-  }  
+  }
 }
 
 static Bool notifyeventsplot(Display *dpy, XEvent *ev, char *rock)
@@ -92,7 +92,7 @@ void xglk_strip_garbage(char *buf, long len)
 
   if (!buf)
     return;
-  
+
   for (ix=0; ix<len; ix++, buf++) {
     ch = *buf;
     if (ch < 32 || (ch >= 127 && ch < 160))

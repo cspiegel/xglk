@@ -6,7 +6,7 @@
 static stream_t *gli_streamlist = NULL;
 static stream_t *gli_currentstr = NULL;
 
-static stream_t *gli_new_stream(glui32 type, int readable, int writable, 
+static stream_t *gli_new_stream(glui32 type, int readable, int writable,
   glui32 rock);
 static void gli_delete_stream(stream_t *str);
 
@@ -16,26 +16,26 @@ int init_gli_streams()
 
   gli_streamlist = NULL;
   gli_currentstr = NULL;
-  
+
   return TRUE;
 }
 
-static stream_t *gli_new_stream(glui32 type, int readable, int writable, 
+static stream_t *gli_new_stream(glui32 type, int readable, int writable,
   glui32 rock)
 {
   stream_t *str = (stream_t *)malloc(sizeof(stream_t));
-  
+
   if (!str)
     return NULL;
-  
+
   str->type = type;
-  
+
   str->rock = rock;
   str->readcount = 0;
   str->writecount = 0;
   str->readable = readable;
   str->writable = writable;
-  
+
   /* start everything up empty, for now */
   str->buf = NULL;
   str->bufptr = NULL;
@@ -44,14 +44,14 @@ static stream_t *gli_new_stream(glui32 type, int readable, int writable,
   str->buflen = 0;
   str->win = NULL;
   str->file = NULL;
-  
+
   str->chain_prev = NULL;
   str->chain_next = gli_streamlist;
   gli_streamlist = str;
   if (str->chain_next) {
     str->chain_next->chain_prev = str;
   }
-  
+
   if (gli_register_obj)
     str->disprock = (*gli_register_obj)(str, gidisp_Class_Stream);
   else
@@ -63,7 +63,7 @@ static stream_t *gli_new_stream(glui32 type, int readable, int writable,
 static void gli_delete_stream(stream_t *str)
 {
   stream_t *prev, *next;
-  
+
   if (gli_unregister_obj)
     (*gli_unregister_obj)(str, gidisp_Class_Stream, str->disprock);
 
@@ -100,13 +100,13 @@ stream_t *glk_stream_iterate(stream_t *str, glui32 *rock)
   else {
     str = str->chain_next;
   }
-  
+
   if (str) {
     if (rock)
       *rock = str->rock;
     return str;
   }
-  
+
   if (rock)
     *rock = 0;
   return NULL;
@@ -127,7 +127,7 @@ stream_t *glk_stream_open_file(frefid_t fref, glui32 fmode,
   char modestr[16];
   stream_t *str;
   FILE *fl;
-    
+
   if (!fref) {
     gli_strict_warning("stream_open_file: invalid fileref id");
     return 0;
@@ -147,38 +147,38 @@ stream_t *glk_stream_open_file(frefid_t fref, glui32 fmode,
     strcpy(modestr, "a");
     break;
   }
-    
+
   if (!fref->textmode)
     strcat(modestr, "b");
-        
+
   fl = fopen(fref->filename, modestr);
   if (!fl) {
     gli_strict_warning("stream_open_file: unable to open file.");
     return 0;
   }
 
-  str = gli_new_stream(strtype_File, 
-    (fmode == filemode_Read || fmode == filemode_ReadWrite), 
-    !(fmode == filemode_Read), 
+  str = gli_new_stream(strtype_File,
+    (fmode == filemode_Read || fmode == filemode_ReadWrite),
+    !(fmode == filemode_Read),
     rock);
   if (!str) {
     gli_strict_warning("stream_open_file: unable to create stream.");
     fclose(fl);
     return 0;
   }
-    
+
   str->file = fl;
-    
+
   return str;
 }
 
-stream_t *gli_stream_open_pathname(char *pathname, int textmode, 
+stream_t *gli_stream_open_pathname(char *pathname, int textmode,
   glui32 rock)
 {
   char modestr[16];
   stream_t *str;
   FILE *fl;
-    
+
   strcpy(modestr, "r");
   if (!textmode)
     strcat(modestr, "b");
@@ -188,36 +188,36 @@ stream_t *gli_stream_open_pathname(char *pathname, int textmode,
     return 0;
   }
 
-  str = gli_new_stream(strtype_File, 
+  str = gli_new_stream(strtype_File,
     TRUE, FALSE, rock);
   if (!str) {
     fclose(fl);
     return 0;
   }
-    
+
   str->file = fl;
-    
+
   return str;
 }
 
-stream_t *glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode, 
+stream_t *glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
   glui32 rock)
 {
   stream_t *str;
-  
-  if (fmode != filemode_Read && fmode != filemode_Write 
+
+  if (fmode != filemode_Read && fmode != filemode_Write
     && fmode != filemode_ReadWrite) {
     gli_strict_warning("stream_open_memory: illegal filemode");
     return 0;
   }
-  
-  str = gli_new_stream(strtype_Memory, 
-    (fmode != filemode_Write), 
-    (fmode != filemode_Read), 
+
+  str = gli_new_stream(strtype_Memory,
+    (fmode != filemode_Write),
+    (fmode != filemode_Read),
     rock);
   if (!str)
     return 0;
-  
+
   if (buf && buflen) {
     str->buf = (unsigned char *)buf;
     str->bufptr = (unsigned char *)buf;
@@ -231,20 +231,20 @@ stream_t *glk_stream_open_memory(char *buf, glui32 buflen, glui32 fmode,
       str->arrayrock = (*gli_register_arr)(buf, buflen, "&+#!Cn");
     }
   }
-  
+
   return str;
 }
 
 stream_t *gli_stream_open_window(window_t *win)
 {
   stream_t *str;
-  
+
   str = gli_new_stream(strtype_Window, FALSE, TRUE, 0);
   if (!str)
     return NULL;
 
   str->win = win;
-  
+
   return str;
 }
 
@@ -252,7 +252,7 @@ void gli_stream_fill_result(stream_t *str, stream_result_t *result)
 {
   if (!result)
     return;
-  
+
   result->readcount = str->readcount;
   result->writecount = str->writecount;
 }
@@ -263,37 +263,37 @@ void glk_stream_close(stream_t *str, stream_result_t *result)
     gli_strict_warning("stream_close: invalid ref");
     return;
   }
-  
+
   if (str->type == strtype_Window) {
     gli_strict_warning("stream_close: cannot close window stream");
     return;
   }
-  
+
   gli_stream_fill_result(str, result);
-  
+
   gli_stream_close(str);
 }
 
 void gli_stream_close(stream_t *str)
 {
   window_t *win;
-  
+
   if (str == gli_currentstr) {
     gli_currentstr = NULL;
   }
-  
-  for (win = gli_window_fixiterate(NULL); 
-       win != NULL; 
+
+  for (win = gli_window_fixiterate(NULL);
+       win != NULL;
        win = gli_window_fixiterate(win)) {
     if (win->echostr == str)
       win->echostr = NULL;
   }
-  
+
   switch (str->type) {
   case strtype_Window:
     /* nothing necessary; the window is already being closed */
     break;
-  case strtype_Memory: 
+  case strtype_Memory:
     if (gli_unregister_arr) {
       (*gli_unregister_arr)(str->buf, str->buflen, "&+#!Cn", str->arrayrock);
     }
@@ -303,7 +303,7 @@ void gli_stream_close(stream_t *str)
     str->file = NULL;
     break;
   }
-  
+
   gli_delete_stream(str);
 }
 
@@ -313,9 +313,9 @@ void gli_streams_close_all()
      only ones that need finalization.) */
   glui32 bucknum;
   stream_t *str, *strnext;
-  
+
   str = gli_streamlist;
-    
+
   while (str) {
     strnext = str->chain_next;
     if (str->type == strtype_File) {
@@ -333,7 +333,7 @@ void glk_stream_set_position(stream_t *str, glsi32 pos, glui32 seekmode)
   }
 
   switch (str->type) {
-  case strtype_Memory: 
+  case strtype_Memory:
     if (seekmode == seekmode_Current) {
       pos = (str->bufptr - str->buf) + pos;
     }
@@ -353,7 +353,7 @@ void glk_stream_set_position(stream_t *str, glsi32 pos, glui32 seekmode)
     /* don't pass to echo stream */
     break;
   case strtype_File:
-    fseek(str->file, pos, 
+    fseek(str->file, pos,
       ((seekmode == seekmode_Current) ? 1 :
 	((seekmode == seekmode_End) ? 2 : 0)));
     break;
@@ -368,7 +368,7 @@ glui32 glk_stream_get_position(stream_t *str)
   }
 
   switch (str->type) {
-  case strtype_Memory: 
+  case strtype_Memory:
     return (str->bufptr - str->buf);
   case strtype_File:
     return ftell(str->file);
@@ -384,7 +384,7 @@ void glk_stream_set_current(stream_t *str)
     gli_currentstr = NULL;
     return;
   }
-  
+
   gli_currentstr = str;
 }
 
@@ -401,7 +401,7 @@ static void gli_put_char(stream_t *str, unsigned char ch)
     return;
 
   str->writecount++;
-  
+
   switch (str->type) {
   case strtype_Memory:
     if (str->bufptr < str->bufend) {
@@ -432,12 +432,12 @@ static void gli_put_buffer(stream_t *str, char *buf, glui32 len)
 {
   glui32 lx;
   char *cx;
-  
+
   if (!str || !str->writable)
     return;
 
   str->writecount += len;
-  
+
   switch (str->type) {
   case strtype_Memory:
     if (str->bufptr >= str->bufend) {
@@ -482,10 +482,10 @@ static void gli_set_style(stream_t *str, glui32 val)
 {
   if (!str || !str->writable)
     return;
-  
+
   if (val >= style_NUMSTYLES)
     val = 0;
-  
+
   switch (str->type) {
   case strtype_Window:
     gli_window_set_style(str->win, val);
@@ -499,7 +499,7 @@ static void gli_set_hyperlink(stream_t *str, glui32 linkval)
 {
   if (!str || !str->writable)
     return;
-    
+
   switch (str->type) {
   case strtype_Window:
     gli_window_set_hyperlink(str->win, linkval);
@@ -519,7 +519,7 @@ static glsi32 gli_get_char(stream_t *str)
 {
   if (!str || !str->readable)
     return -1;
-  
+
   switch (str->type) {
   case strtype_Memory:
     if (str->bufptr < str->bufend) {
@@ -555,7 +555,7 @@ static glui32 gli_get_buffer(stream_t *str, char *buf, glui32 len)
 {
   if (!str || !str->readable)
     return 0;
-    
+
   switch (str->type) {
   case strtype_Memory:
     if (str->bufptr >= str->bufend) {
@@ -600,7 +600,7 @@ static glui32 gli_get_line(stream_t *str, char *buf, glui32 len)
 
   if (!str || !str->readable)
     return 0;
-    
+
   switch (str->type) {
   case strtype_Memory:
     if (len == 0)

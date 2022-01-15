@@ -71,8 +71,8 @@ int xglk_init(int argc, char *argv[], glkunix_startup_t *startdata)
   xio_wid = prefs.win_w;
   xio_hgt = prefs.win_h;
 
-  xiowin = XCreateSimpleWindow(xiodpy, DefaultRootWindow(xiodpy), 
-    prefs.win_x, prefs.win_y, xio_wid, xio_hgt, 1, 
+  xiowin = XCreateSimpleWindow(xiodpy, DefaultRootWindow(xiodpy),
+    prefs.win_x, prefs.win_y, xio_wid, xio_hgt, 1,
     prefs.forecolor.pixel, prefs.backcolor.pixel);
 
   /*
@@ -80,7 +80,7 @@ int xglk_init(int argc, char *argv[], glkunix_startup_t *startdata)
   winattrs.border_pixel = prefs.forecolor.pixel;
   xiowin = XCreateWindow(xiodpy, DefaultRootWindow(xiodpy),
     prefs.win_x, prefs.win_y, xio_wid, xio_hgt, 1,
-    xiodepth, InputOutput, CopyFromParent, 
+    xiodepth, InputOutput, CopyFromParent,
     CWBackPixel | CWBorderPixel, &winattrs);
   */
 
@@ -96,7 +96,7 @@ int xglk_init(int argc, char *argv[], glkunix_startup_t *startdata)
     szhints.y = prefs.win_y;
     szhints.width = xio_wid;
     szhints.height = xio_hgt;
-    XSetWMNormalHints(xiodpy, xiowin, &szhints); 
+    XSetWMNormalHints(xiodpy, xiowin, &szhints);
   }
   { /* make some window managers happy */
     XWMHints wmhints;
@@ -120,7 +120,7 @@ int xglk_init(int argc, char *argv[], glkunix_startup_t *startdata)
     gcvalues.background = prefs.backcolor.pixel;
     gcfore = XCreateGC(xiodpy, xiowin, GCForeground|GCBackground, &gcvalues);
     XSetGraphicsExposures(xiodpy, gcfore, FALSE);
-    
+
     gcvalues.foreground = prefs.backcolor.pixel;
     gcvalues.background = prefs.forecolor.pixel;
     gcback = XCreateGC(xiodpy, xiowin, GCForeground|GCBackground, &gcvalues);
@@ -142,12 +142,12 @@ int xglk_init(int argc, char *argv[], glkunix_startup_t *startdata)
     if (xiodepth==1) {
       Pixmap greypm;
       gcvalues.fill_style = FillOpaqueStippled;
-      greypm = XCreateBitmapFromData(xiodpy, xiowin, greypm_bits, 
+      greypm = XCreateBitmapFromData(xiodpy, xiowin, greypm_bits,
 	greypm_width, greypm_height);
       gcvalues.foreground = prefs.forecolor.pixel;
       gcvalues.background = prefs.backcolor.pixel;
       gcvalues.stipple = greypm;
-      gctech = XCreateGC(xiodpy, xiowin, 
+      gctech = XCreateGC(xiodpy, xiowin,
 	GCForeground|GCBackground|GCFillStyle|GCStipple, &gcvalues);
       gcselect = gcfore;
       gctechu = gctech;
@@ -175,19 +175,19 @@ int xglk_init(int argc, char *argv[], glkunix_startup_t *startdata)
 
   gli_styles_compute(&plainfonts, NULL);
   xglk_arrange_window();
-  
+
   return TRUE;
 }
 
-/* Arrange all the subwindows and the message line, based on the 
+/* Arrange all the subwindows and the message line, based on the
    xio_wid and xio_hgt. Doesn't do any drawing. */
 void xglk_arrange_window()
 {
   XRectangle box;
   int botheight;
-  
+
   botheight = plainfonts.lineheight+4;
-  
+
   xmsg_resize(0, xio_hgt-botheight, xio_wid, botheight);
 
   box.x = 0;
@@ -200,7 +200,7 @@ void xglk_arrange_window()
   box.y += (MATTE_WIDTH-1);
   box.width -= 2*(MATTE_WIDTH-1);
   box.height -= 2*(MATTE_WIDTH-1);
-  
+
   if (gli_rootwin)
     gli_window_rearrange(gli_rootwin, &box);
 
@@ -229,14 +229,14 @@ void xglk_redraw()
     XGCValues gcvalues;
     gcvalues.line_width = linewid;
     XChangeGC(xiodpy, gctech, GCLineWidth, &gcvalues);
-    XDrawRectangle(xiodpy, xiowin, gctech, 
-      matte_box.x+linewid/2, matte_box.y+linewid/2, 
+    XDrawRectangle(xiodpy, xiowin, gctech,
+      matte_box.x+linewid/2, matte_box.y+linewid/2,
       matte_box.width-linewid, matte_box.height-linewid);
     gcvalues.line_width = 1;
     XChangeGC(xiodpy, gctech, GCLineWidth, &gcvalues);
   }
   else {
-    XFillRectangle(xiodpy, xiowin, gctech, 
+    XFillRectangle(xiodpy, xiowin, gctech,
       matte_box.x, matte_box.y, matte_box.width, matte_box.height);
   }
 
@@ -244,7 +244,7 @@ void xglk_redraw()
 
   if (gli_rootwin)
     gli_window_redraw(gli_rootwin);
-  
+
   if (gli_focuswin) {
     gli_draw_window_highlight(gli_focuswin, TRUE);
   }
@@ -252,7 +252,7 @@ void xglk_redraw()
   xio_any_invalid = FALSE;
 }
 
-void xglk_perform_click(int dir, XPoint *pt, int butnum, 
+void xglk_perform_click(int dir, XPoint *pt, int butnum,
   unsigned int state)
 {
   window_t *win;
@@ -323,7 +323,7 @@ void xglk_clearfor_string(XColor *colref, int xpos, int ypos,
     xpos, ypos, width, height);
 }
 
-void xglk_draw_string(fontref_t *fontref, int islink, int width, 
+void xglk_draw_string(fontref_t *fontref, int islink, int width,
   int xpos, int ypos, char *str, int len)
 {
   XGCValues gcvalues;
@@ -335,8 +335,8 @@ void xglk_draw_string(fontref_t *fontref, int islink, int width,
     textforefont = fontref->fontstr->fid;
     gcvalues.font = textforefont;
   }
-  forepix = ((islink && prefs.colorlinks) 
-    ? (fontref->linkcolor.pixel) 
+  forepix = ((islink && prefs.colorlinks)
+    ? (fontref->linkcolor.pixel)
     : (fontref->forecolor.pixel));
   if (forepix != textforepixel) {
     mask |= GCForeground;
@@ -358,12 +358,12 @@ void xglk_draw_string(fontref_t *fontref, int islink, int width,
 void gli_draw_window_outline(XRectangle *winbox)
 {
   XRectangle box;
-  
+
   box.x = winbox->x-1;
   box.y = winbox->y-1;
   box.width = winbox->width+2;
   box.height = winbox->height+2;
-  
+
   if (xiodepth > 1) {
     XDrawLine(xiodpy, xiowin, gctechd,
       box.x-1, box.y+box.height, box.x-1, box.y-1);
@@ -375,11 +375,11 @@ void gli_draw_window_outline(XRectangle *winbox)
     XDrawLine(xiodpy, xiowin, gctechu,
       box.x+box.width, box.y+box.height, box.x+box.width, box.y);
   }
-  XDrawRectangle(xiodpy, xiowin, gcfore, 
-    box.x, box.y, box.width-1, box.height-1); 
+  XDrawRectangle(xiodpy, xiowin, gcfore,
+    box.x, box.y, box.width-1, box.height-1);
 }
 
-void gli_draw_window_margin(XColor *colref, 
+void gli_draw_window_margin(XColor *colref,
   int outleft, int outtop, int outwidth, int outheight,
   int inleft, int intop, int inwidth, int inheight)
 {
@@ -403,16 +403,16 @@ void gli_draw_window_margin(XColor *colref,
   }
 
   if (outleft < inleft)
-    XFillRectangle(xiodpy, xiowin, gc, 
+    XFillRectangle(xiodpy, xiowin, gc,
       outleft, outtop, inleft-outleft, outheight);
   if (outtop < intop)
-    XFillRectangle(xiodpy, xiowin, gc, 
+    XFillRectangle(xiodpy, xiowin, gc,
       outleft, outtop, outwidth, intop-outtop);
   if (outright > inright)
-    XFillRectangle(xiodpy, xiowin, gc, 
+    XFillRectangle(xiodpy, xiowin, gc,
       inright, outtop, outright-inright, outheight);
   if (outbottom > inbottom)
-    XFillRectangle(xiodpy, xiowin, gc, 
+    XFillRectangle(xiodpy, xiowin, gc,
       outleft, inbottom, outwidth, outbottom-inbottom);
 }
 
@@ -421,7 +421,7 @@ void gli_draw_window_highlight(window_t *win, int turnon)
   XRectangle *boxptr = gli_window_get_rect(win);
   int boxleft, boxtop, boxwidth, boxheight;
   GC gc;
-  
+
   boxleft = boxptr->x - (MATTE_WIDTH - 2);
   boxwidth = boxptr->width + 2 * (MATTE_WIDTH - 2);
   boxtop = boxptr->y - (MATTE_WIDTH - 2);
@@ -431,7 +431,7 @@ void gli_draw_window_highlight(window_t *win, int turnon)
     gc = gcselect;
   else
     gc = gctech;
-  
+
   if (MATTE_WIDTH < 6) {
     XDrawRectangle(xiodpy, xiowin, gc,
       boxleft, boxtop, boxwidth-1, boxheight-1);
@@ -463,12 +463,12 @@ void xglk_relax_memory()
 void xgc_focus(window_t *dummy, int op)
 {
   window_t *win;
-  
+
   if (!gli_rootwin) {
     gli_set_focus(NULL);
     return;
   }
-  
+
   win = gli_focuswin;
   do {
     win = gli_window_fixiterate(win);
@@ -487,7 +487,7 @@ void xgc_redraw(window_t *win, int op)
      works properly, it will all be redrawn.) */
   /*
   XFillRectangle(xiodpy, xiowin, gcselect,
-    0, 0, xio_wid, xio_hgt); 
+    0, 0, xio_wid, xio_hgt);
   */
 
   xglk_invalidate(NULL);

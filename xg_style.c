@@ -9,9 +9,9 @@ static stylehints_t textgrid_hints;
 
 static int gli_stylehints_init(stylehints_t *hints);
 static int gli_stylehints_clone(stylehints_t *dest, stylehints_t *src);
-static int gli_stylehint_get(stylehints_t *hints, glui32 styl, glui32 hint, 
+static int gli_stylehint_get(stylehints_t *hints, glui32 styl, glui32 hint,
   glsi32 *val);
-static void gli_stylehint_set(stylehints_t *hints, glui32 styl, glui32 hint, 
+static void gli_stylehint_set(stylehints_t *hints, glui32 styl, glui32 hint,
   int set, glsi32 val);
 
 static unsigned short MaxRGBDifference(XColor *col1, XColor *col2);
@@ -19,7 +19,7 @@ static unsigned short MaxRGBDifference(XColor *col1, XColor *col2);
 int init_gli_styles()
 {
   int ix, jx;
-  
+
   ix = gli_stylehints_init(&null_hints);
   if (!ix)
     return FALSE;
@@ -29,35 +29,35 @@ int init_gli_styles()
   ix = gli_stylehints_init(&textgrid_hints);
   if (!ix)
     return FALSE;
-  
+
   textbuf_hints.type = wintype_TextBuffer;
   textgrid_hints.type = wintype_TextGrid;
-  
+
   return TRUE;
 }
 
 static int gli_stylehints_init(stylehints_t *hints)
 {
   int ix;
-  
+
   hints->type = wintype_AllTypes;
-  
+
   for (ix=0; ix<style_NUMSTYLES; ix++) {
     hints->style[ix].setflags = 0;
     hints->style[ix].vals = NULL;
     hints->style[ix].length = 0;
     hints->style[ix].size = 0;
   }
-  
+
   return TRUE;
 }
 
 static int gli_stylehints_clone(stylehints_t *dest, stylehints_t *src)
 {
   int ix, jx, len;
-  
+
   dest->type = src->type;
-  
+
   for (ix=0; ix<style_NUMSTYLES; ix++) {
     dest->style[ix].setflags = src->style[ix].setflags;
     len = src->style[ix].length;
@@ -77,8 +77,8 @@ static int gli_stylehints_clone(stylehints_t *dest, stylehints_t *src)
   return TRUE;
 }
 
-void gli_styles_compute(fontset_t *font, stylehints_t *hints) 
-{ 
+void gli_styles_compute(fontset_t *font, stylehints_t *hints)
+{
   int ix;
   int negindent;
   glsi32 val;
@@ -91,7 +91,7 @@ void gli_styles_compute(fontset_t *font, stylehints_t *hints)
 
   if (!hints)
     hints = &null_hints;
-  
+
   if (hints->type == wintype_TextGrid)
     wprefs = &prefs.textgrid;
   else
@@ -130,7 +130,7 @@ void gli_styles_compute(fontset_t *font, stylehints_t *hints)
     else
       proportional = wprefs->style[ix].proportional;
 
-    xglk_build_fontname(wprefs->style[ix].spec, buf, 
+    xglk_build_fontname(wprefs->style[ix].spec, buf,
       size, weight, oblique, proportional);
     fref->fontstr = XLoadQueryFont(xiodpy, buf);
     if (!fref->fontstr) {
@@ -146,21 +146,21 @@ void gli_styles_compute(fontset_t *font, stylehints_t *hints)
     fref->backcolor = wprefs->style[ix].backcolor;
     /*### or hint */
 
-    if (wprefs->justhint 
+    if (wprefs->justhint
       && gli_stylehint_get(hints, ix, stylehint_Justification, &val))
       font->gc[ix].justify = val;
     else
       font->gc[ix].justify = wprefs->style[ix].justify;
 
-    if (wprefs->indenthint 
+    if (wprefs->indenthint
       && gli_stylehint_get(hints, ix, stylehint_Indentation, &val))
-      font->gc[ix].indent = (font->gc[ix].fontstr->ascent * val) / 2; 
+      font->gc[ix].indent = (font->gc[ix].fontstr->ascent * val) / 2;
     else
       font->gc[ix].indent = wprefs->style[ix].baseindent;
 
-    if (wprefs->indenthint 
+    if (wprefs->indenthint
       && gli_stylehint_get(hints, ix, stylehint_ParaIndentation, &val))
-      font->gc[ix].parindent = (font->gc[ix].fontstr->ascent * val) / 2; 
+      font->gc[ix].parindent = (font->gc[ix].fontstr->ascent * val) / 2;
     else
       font->gc[ix].parindent = wprefs->style[ix].parindent;
   }
@@ -169,7 +169,7 @@ void gli_styles_compute(fontset_t *font, stylehints_t *hints)
   font->lineoff = 0;
   font->baseindent = 0;
   negindent = 0;
-  
+
   for (ix=0; ix<style_NUMSTYLES; ix++) {
     fontref_t *fref = &(font->gc[ix]);
     int ascent, descent, dir;
@@ -183,7 +183,7 @@ void gli_styles_compute(fontset_t *font, stylehints_t *hints)
       font->gc[ix].underliney = descent-1;
     else
       font->gc[ix].underliney = 1;
-    
+
     clineheight = ascent + descent + wprefs->leading;
     clineheightoff = ascent;
     if (clineheight > font->lineheight)
@@ -202,20 +202,20 @@ void gli_styles_compute(fontset_t *font, stylehints_t *hints)
   font->baseindent = -negindent;
 }
 
-static void gli_stylehint_set(stylehints_t *hints, glui32 styl, glui32 hint, 
+static void gli_stylehint_set(stylehints_t *hints, glui32 styl, glui32 hint,
   int set, glsi32 val)
 {
   int ix, len;
   glui32 hintbit;
   styleonehint_t *hn;
-  
+
   if (styl >= style_NUMSTYLES || hint >= stylehint_NUMHINTS)
     return;
-  
+
   hn = &(hints->style[styl]);
   hintbit = (1 << hint);
   len = hn->length;
-  
+
   if (set) {
     if (hn->setflags & hintbit) {
       for (ix=0; ix<len; ix++) {
@@ -255,21 +255,21 @@ static void gli_stylehint_set(stylehints_t *hints, glui32 styl, glui32 hint,
   }
 }
 
-static int gli_stylehint_get(stylehints_t *hints, glui32 styl, glui32 hint, 
+static int gli_stylehint_get(stylehints_t *hints, glui32 styl, glui32 hint,
   glsi32 *val)
 {
   int ix, len;
   styleonehint_t *hn;
-  
+
   if (styl >= style_NUMSTYLES || hint >= stylehint_NUMHINTS)
     return FALSE;
-  
+
   hn = &(hints->style[styl]);
-  
+
   if (!(hn->setflags & (1 << hint))) {
     return FALSE;
   }
-  
+
   len = hn->length;
   for (ix=0; ix<len; ix++) {
     if (hn->vals[ix].type == hint) {
@@ -277,7 +277,7 @@ static int gli_stylehint_get(stylehints_t *hints, glui32 styl, glui32 hint,
       return TRUE;
     }
   }
-  
+
   return FALSE;
 }
 
@@ -329,71 +329,71 @@ glui32 glk_style_distinguish(window_t *win, glui32 styl1, glui32 styl2)
 {
   fontset_t *fonts;
   fontref_t *font1, *font2;
-  
+
   if (!win) {
     gli_strict_warning("window_style_distinguish: invalid id");
     return FALSE;
   }
-  
+
   fonts = gli_window_get_fontset(win);
   if (!fonts)
     return FALSE;
-  
+
   if (styl1 >= style_NUMSTYLES || styl2 >= style_NUMSTYLES)
     return FALSE;
-  
+
   if (styl1 == styl2)
     return FALSE;
-  
+
   font1 = &(fonts->gc[styl1]);
   font2 = &(fonts->gc[styl2]);
-  
+
   if (strcmp(font1->specname, font2->specname))
     return TRUE;
 
   if (font1->justify != font2->justify) {
-    if (!((font1->justify == stylehint_just_LeftFlush 
+    if (!((font1->justify == stylehint_just_LeftFlush
       || font1->justify == stylehint_just_LeftRight)
-      && (font2->justify == stylehint_just_LeftFlush 
+      && (font2->justify == stylehint_just_LeftFlush
 	|| font2->justify == stylehint_just_LeftRight)))
       return TRUE;
   }
-  
+
   if (font1->indent != font2->indent)
     return TRUE;
-  
+
   if (MaxRGBDifference(&font1->forecolor, &font2->forecolor) >= 6500)
     return TRUE;
   if (MaxRGBDifference(&font1->backcolor, &font2->backcolor) >= 6500)
     return TRUE;
-  
+
   return FALSE;
 }
 
-glui32 glk_style_measure(window_t *win, glui32 styl, glui32 hint, 
+glui32 glk_style_measure(window_t *win, glui32 styl, glui32 hint,
   glui32 *result)
 {
   fontset_t *fonts;
   fontref_t *font;
   glui32 dummy, val;
-  
+
   if (!win) {
     gli_strict_warning("window_style_measure: invalid id");
     return FALSE;
   }
-  
+
   if (!result)
     result = &dummy;
-  
+
   fonts = gli_window_get_fontset(win);
   if (!fonts)
     return FALSE;
-  
+
   if (styl >= style_NUMSTYLES || hint >= stylehint_NUMHINTS)
     return FALSE;
-  
+
   font = &(fonts->gc[styl]);
-  
+
   switch (hint) {
   case stylehint_Weight:
     /* Can't figure this out in X */
@@ -428,30 +428,30 @@ glui32 glk_style_measure(window_t *win, glui32 styl, glui32 hint,
 static unsigned short MaxRGBDifference(XColor *col1, XColor *col2)
 {
   unsigned short val, result;
-  
+
   result = 0;
-  
+
   if ((unsigned short)(col1->red) > (unsigned short)(col2->red))
     val = (unsigned short)(col1->red) - (unsigned short)(col2->red);
   else
     val = (unsigned short)(col2->red) - (unsigned short)(col1->red);
   if (val > result)
     result = val;
-  
+
   if ((unsigned short)(col1->green) > (unsigned short)(col2->green))
     val = (unsigned short)(col1->green) - (unsigned short)(col2->green);
   else
     val = (unsigned short)(col2->green) - (unsigned short)(col1->green);
   if (val > result)
     result = val;
-  
+
   if ((unsigned short)(col1->blue) > (unsigned short)(col2->blue))
     val = (unsigned short)(col1->blue) - (unsigned short)(col2->blue);
   else
     val = (unsigned short)(col2->blue) - (unsigned short)(col1->blue);
   if (val > result)
     result = val;
-  
+
   return result;
 }
 

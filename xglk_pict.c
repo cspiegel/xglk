@@ -56,7 +56,7 @@ picture_t *picture_find(unsigned long id)
   if (!imageslegal) {
     return NULL;
   }
-  
+
   if (!table) {
     table = (picture_t **)malloc(HASHSIZE * sizeof(picture_t *));
     if (!table)
@@ -64,26 +64,26 @@ picture_t *picture_find(unsigned long id)
     for (ix=0; ix<HASHSIZE; ix++)
       table[ix] = NULL;
   }
-  
+
   buck = id % HASHSIZE;
-  
+
   for (pic = table[buck]; pic; pic = pic->hash_next) {
     if (pic->id == id)
       break;
   }
-  
+
   if (pic && pic->gimp) {
     pic->refcount++;
     return pic;
   }
-  
+
   /* First, make sure the data exists. */
-  
+
   if (!xres_is_resource_map()) {
     char filename[PATH_MAX];
     unsigned char buf[8];
 
-    sprintf(filename, "PIC%ld", id); 
+    sprintf(filename, "PIC%ld", id);
     /* Could check an environment variable or preference for a directory,
        if we were clever. */
 
@@ -123,7 +123,7 @@ picture_t *picture_find(unsigned long id)
   }
 
   gimp = NULL;
-  
+
 #ifndef NO_PNG_AVAILABLE
   if (chunktype == giblorb_ID_PNG)
     gimp = load_image_png(fl);
@@ -145,19 +145,19 @@ picture_t *picture_find(unsigned long id)
     pic->refcount++;
     return pic;
   }
-  
+
   pic = (picture_t *)malloc(sizeof(picture_t));
   pic->id = id;
   pic->refcount = 1;
   pic->gimp = gimp;
   pic->pix = 0;
-  
+
   pic->width = gimp->width;
   pic->height = gimp->height;
-  
+
   pic->hash_next = table[buck];
   table[buck] = pic;
-  
+
   return pic;
 
 #endif /* NOTHING_AVAILABLE */
@@ -168,16 +168,16 @@ void picture_release(picture_t *pic)
   pic->refcount--;
 }
 
-void picture_draw(picture_t *pic, Drawable dest, 
+void picture_draw(picture_t *pic, Drawable dest,
   int xpos, int ypos, int width, int height,
   XRectangle *clipbox)
 {
   int destl, destt, destr, destb;
 
   if (!pic->gimp) {
-    XFillRectangle(xiodpy, dest, gctechu, 
+    XFillRectangle(xiodpy, dest, gctechu,
       xpos, ypos, width, height);
-    XFillRectangle(xiodpy, dest, gctechd, 
+    XFillRectangle(xiodpy, dest, gctechd,
       xpos+1, ypos+1, width-2, height-2);
     return;
   }
@@ -225,7 +225,7 @@ void picture_draw(picture_t *pic, Drawable dest,
       destb = clipbox->y+clipbox->height;
   }
 
-  XCopyArea(xiodpy, pic->pix, dest, gcfore, 
+  XCopyArea(xiodpy, pic->pix, dest, gcfore,
     destl-xpos, destt-ypos, destr-destl, destb-destt, destl, destt);
 }
 
@@ -233,10 +233,10 @@ void picture_relax_memory()
 {
   int ix, buck;
   picture_t *pic;
-  
+
   if (!table)
     return;
-  
+
   for (buck=0; buck<HASHSIZE; buck++) {
     for (pic = table[buck]; pic; pic = pic->hash_next) {
       if (pic->refcount == 0) {
@@ -288,7 +288,7 @@ static XImage *load_image_jpeg(FILE *fl)
   char *destdata = NULL;
   JSAMPARRAY rowarray = NULL; /* this is **JSAMPLE */
   JSAMPLE *srcdata = NULL;
-  
+
   cinfo.err = jpeg_std_error(&jerr);
   jpeg_create_decompress(&cinfo);
 
@@ -297,7 +297,7 @@ static XImage *load_image_jpeg(FILE *fl)
   jpeg_read_header(&cinfo, TRUE);
 
   /* Image info is now available. */
-  
+
   jpeg_start_decompress(&cinfo);
 
   /* Output image info is now available. */
@@ -323,9 +323,9 @@ static XImage *load_image_jpeg(FILE *fl)
     for (ix=0; ix<height; ix++) {
       rowarray[ix] = srcdata + (ix*srcrowbytes);
     }
-    
-    gimp = XCreateImage(xiodpy, DefaultVisual(xiodpy, xioscn), 
-      destdepth, ZPixmap, 0, destdata, 
+
+    gimp = XCreateImage(xiodpy, DefaultVisual(xiodpy, xioscn),
+      destdepth, ZPixmap, 0, destdata,
       width, height, 32, destrowbytes);
 
     if (gimp) {
@@ -336,7 +336,7 @@ static XImage *load_image_jpeg(FILE *fl)
 
       fill_image(gimp, (char *)srcdata, destdata, width, height,
 	channels, destdepth, srcrowbytes, destrowbytes);
-    }    
+    }
   }
 
   jpeg_destroy_decompress(&cinfo);
@@ -412,7 +412,7 @@ static XImage *load_image_png(FILE *fl)
     destrowbytes = (destrowbytes | 31) + 1;
   destdata = malloc(destrowbytes * height);
 
-  /* 
+  /*
      printf("destdepth=%d; destrowbytes=%ld\n",
      destdepth, destrowbytes);
   */
@@ -434,8 +434,8 @@ static XImage *load_image_png(FILE *fl)
   printf("width=%ld, height=%ld, coltype=%d, channels=%d, "
     "srcdepth=%d; srcrowbytes=%ld\n",
     width, height, color_type, channels, srcdepth, srcrowbytes);
-  printf("new channels=%d, srcdepth=%d\n", 
-    png_get_channels(png_ptr, info_ptr), 
+  printf("new channels=%d, srcdepth=%d\n",
+    png_get_channels(png_ptr, info_ptr),
     png_get_bit_depth(png_ptr, info_ptr));
   */
 
@@ -445,12 +445,12 @@ static XImage *load_image_png(FILE *fl)
     for (ix=0; ix<height; ix++) {
       rowarray[ix] = srcdata + (ix*srcrowbytes);
     }
-    
-    gimp = XCreateImage(xiodpy, DefaultVisual(xiodpy, xioscn), 
-      destdepth, ZPixmap, 0, destdata, 
+
+    gimp = XCreateImage(xiodpy, DefaultVisual(xiodpy, xioscn),
+      destdepth, ZPixmap, 0, destdata,
       width, height, 32, destrowbytes);
 
-#if 0 /* ### */    
+#if 0 /* ### */
     if (getenv("XGLK_DEBUG")) {
       static int flag = 0;
       if (!flag) {
@@ -462,7 +462,7 @@ static XImage *load_image_png(FILE *fl)
 	printf("masks = 0x%lx, 0x%lx, 0x%lx\n",
 	  gimp->red_mask, gimp->green_mask, gimp->blue_mask);
       }
-    } 
+    }
 #endif /* ### */
 
     /* Lab notes:
@@ -481,7 +481,7 @@ static XImage *load_image_png(FILE *fl)
      */
 
     if (gimp) {
-      png_read_image(png_ptr, rowarray); 
+      png_read_image(png_ptr, rowarray);
       png_read_end(png_ptr, info_ptr);
 
       fill_image(gimp, (char *)srcdata, destdata, width, height,
@@ -531,14 +531,14 @@ static void fill_image(XImage *gimp, char *srcdata, char *destdata,
 	  int greybase = (grey+25) / 51;
 	  /* compute the error */
 	  destptr[0] = pixelcube[greybase * 36 + greybase * 6 + greybase];
-	  if (prefs.ditherimages) { 
+	  if (prefs.ditherimages) {
 	    int greyadd=0;
 	    int iix, val, valadd;
 	    grey -= greybase*51;
 	    /* distribute it. This is annoying. */
 	    for (iix = 0; iix < 4; iix++) {
 	      struct ditherdata_struct *dith = &(ditherdata[iix]);
-	      int byteoff = srcrowbytes * dith->yoff 
+	      int byteoff = srcrowbytes * dith->yoff
 		+ channels * dith->xoff;
 	      greyadd += (grey * dith->fraction) / 16;
 	      val = (unsigned char)srcptr[byteoff];
@@ -579,7 +579,7 @@ static void fill_image(XImage *gimp, char *srcdata, char *destdata,
 	  int bluebase = (blue+25) / 51;
 	  /* compute the error */
 	  destptr[0] = pixelcube[redbase * 36 + greenbase * 6 + bluebase];
-	  if (prefs.ditherimages) { 
+	  if (prefs.ditherimages) {
 	    int redadd=0, greenadd=0, blueadd=0;
 	    int iix, val, valadd;
 	    red -= redbase*51;
@@ -588,7 +588,7 @@ static void fill_image(XImage *gimp, char *srcdata, char *destdata,
 	    /* distribute it. This is annoying. */
 	    for (iix = 0; iix < 4; iix++) {
 	      struct ditherdata_struct *dith = &(ditherdata[iix]);
-	      int byteoff = srcrowbytes * dith->yoff 
+	      int byteoff = srcrowbytes * dith->yoff
 		+ channels * dith->xoff;
 	      redadd += (red * dith->fraction) / 16;
 	      greenadd += (green * dith->fraction) / 16;
@@ -837,7 +837,7 @@ static void fill_image(XImage *gimp, char *srcdata, char *destdata,
       for (jx = 0; jx < height; jx++) {
 	if (dx == 1)
 	  srcptr = srcrowptr;
-	else 
+	else
 	  srcptr = srcrowptr + (channels * (width-1));
 	destptr = destrowptr;
 	next_error = acc_error[1];
@@ -876,7 +876,7 @@ static void fill_image(XImage *gimp, char *srcdata, char *destdata,
       free(acc_error);
     }
   }
-  else { 
+  else {
     /* All other bit depths, just use a constant pattern. */
     memset(destdata, 0x55, height*destrowbytes);
   }
@@ -902,8 +902,8 @@ static XImage *scale_image(XImage *src, int destwidth, int destheight)
     destrowbytes = (destrowbytes | 31) + 1;
   destdata = (unsigned char *)malloc(destrowbytes * destheight);
 
-  dest = XCreateImage(xiodpy, DefaultVisual(xiodpy, xioscn), 
-    depth, ZPixmap, 0, (char *)destdata, 
+  dest = XCreateImage(xiodpy, DefaultVisual(xiodpy, xioscn),
+    depth, ZPixmap, 0, (char *)destdata,
     destwidth, destheight, 32, destrowbytes);
   if (!dest)
     return NULL;
@@ -917,7 +917,7 @@ static XImage *scale_image(XImage *src, int destwidth, int destheight)
   xcounter = 0;
 
   if (depth == 1 || depth == 8) {
-    for (ix=0; ix<destwidth; ix++) { 
+    for (ix=0; ix<destwidth; ix++) {
       rowmap[destiptr] = srciptr;
       xcounter += srcwidth;
       while (xcounter >= destwidth) {
@@ -928,7 +928,7 @@ static XImage *scale_image(XImage *src, int destwidth, int destheight)
     }
   }
   else if (depth == 16) {
-    for (ix=0; ix<destwidth; ix++) { 
+    for (ix=0; ix<destwidth; ix++) {
       rowmap[destiptr] = srciptr;
       rowmap[destiptr+1] = srciptr+1;
       xcounter += srcwidth;
@@ -940,7 +940,7 @@ static XImage *scale_image(XImage *src, int destwidth, int destheight)
     }
   }
   else if (depth == 32) {
-    for (ix=0; ix<destwidth; ix++) { 
+    for (ix=0; ix<destwidth; ix++) {
       rowmap[destiptr] = srciptr;
       rowmap[destiptr+1] = srciptr+1;
       rowmap[destiptr+2] = srciptr+2;

@@ -7,16 +7,16 @@
 typedef struct sattr_struct {
   glui32 style, linkid;
   int blank; /* flag */
-  int end; 
-  /* style runs from the previous one to (before) here. Everything 
-     after the last style is blank. (Actually, this is the start 
+  int end;
+  /* style runs from the previous one to (before) here. Everything
+     after the last style is blank. (Actually, this is the start
      of the next style.) */
 } sattr_t;
 
 typedef struct sline_struct {
   char *text; /* pointer to array of text_size chars */
   int text_size; /* allocation size; at least width, but could be more */
-  sattr_t *attr; 
+  sattr_t *attr;
   int numattr;
   int attr_size; /* allocation size */
   int dirtybeg, dirtyend; /* chars; [) protocol; -1,-1 for non-dirty */
@@ -54,14 +54,14 @@ struct window_textgrid_struct {
   XRectangle cbox; /* contents -- the characters themselves */
   int width, height;
   sline_t *linelist;
-  int height_size; /* allocation size. Lines above height have valid text, 
-		      text_size, attr, attr_size fields, but the rest are 
+  int height_size; /* allocation size. Lines above height have valid text,
+		      text_size, attr, attr_size fields, but the rest are
 		      garbage. */
 
   int cursorx, cursory;
 
   int dirtybeg, dirtyend; /* lines; [) protocol; -1,-1 for non-dirty */
-  
+
   sdot_t dot;
   sdot_t lastdot;
 
@@ -80,39 +80,39 @@ struct window_textgrid_struct {
   int drag_mouseevent, drag_linkevent;
   glui32 drag_linkid;
   sdot_t drag_first, drag_linkpos;
-  
+
 };
 
 static void win_textgrid_layout(window_textgrid_t *cutwin, int drawall);
 static void flip_selection(window_textgrid_t *cutwin, sdot_t *dot);
-static int dot_contains_dot(window_textgrid_t *dwin, sdot_t *bigdot, 
+static int dot_contains_dot(window_textgrid_t *dwin, sdot_t *bigdot,
   sdot_t *dot);
-static void find_pos_by_loc(window_textgrid_t *dwin, int xpos, int ypos, 
+static void find_pos_by_loc(window_textgrid_t *dwin, int xpos, int ypos,
   int addhalf, XPoint *res);
-static int compare_pos_to_dot(window_textgrid_t *dwin, sdot_t *dot, 
+static int compare_pos_to_dot(window_textgrid_t *dwin, sdot_t *dot,
   int pchar, int pline);
 static void kill_input(window_textgrid_t *cutwin, int beg, int end);
-static void insert_input(window_textgrid_t *cutwin, int pos, char *buf, 
+static void insert_input(window_textgrid_t *cutwin, int pos, char *buf,
   int len);
 static void xgrid_line_cancel(window_textgrid_t *cutwin, event_t *ev);
 
 struct window_textgrid_struct *win_textgrid_create(window_t *win)
 {
   int jx;
-  window_textgrid_t *res = 
+  window_textgrid_t *res =
     (window_textgrid_t *)malloc(sizeof(window_textgrid_t));
   if (!res)
     return NULL;
-  
+
   res->owner = win;
 
   gli_stylehints_for_window(wintype_TextGrid, &(res->hints));
   gli_styles_compute(&(res->font), &(res->hints));
-  
+
   res->width = 0;
   res->height = 0;
   res->height_size = 4;
-  res->linelist = (sline_t *)malloc(res->height_size * sizeof(sline_t)); 
+  res->linelist = (sline_t *)malloc(res->height_size * sizeof(sline_t));
   for (jx = 0; jx < res->height_size; jx++) {
     sline_t *ln = &(res->linelist[jx]);
     ln->text_size = 20;
@@ -120,16 +120,16 @@ struct window_textgrid_struct *win_textgrid_create(window_t *win)
     ln->attr_size = 4;
     ln->attr = (sattr_t *)malloc(ln->attr_size * sizeof(sattr_t));
   }
-  
+
   res->cursorx = 0;
   res->cursory = 0;
-  
+
   res->dirtybeg = -1;
   res->dirtyend = -1;
-  
+
   res->dot.begline = -1;
   res->lastdot.begline = -1;
-  
+
   res->isactive = FALSE;
 
   res->buffer = NULL;
@@ -141,10 +141,10 @@ struct window_textgrid_struct *win_textgrid_create(window_t *win)
 void win_textgrid_destroy(window_textgrid_t *win)
 {
   int jx;
-  
+
   if (win->buffer) {
     if (gli_unregister_arr) {
-      (*gli_unregister_arr)(win->buffer, win->buflen, "&+#!Cn", 
+      (*gli_unregister_arr)(win->buffer, win->buflen, "&+#!Cn",
 	win->inarrayrock);
     }
     win->buffer = NULL;
@@ -161,33 +161,33 @@ void win_textgrid_destroy(window_textgrid_t *win)
       ln->attr = NULL;
     }
   }
-  
+
   free(win->linelist);
   win->linelist = NULL;
-  
+
   win->owner = NULL;
-  
+
   free(win);
 }
 
 /* Return the first style whose end is after pos. If all styles
    end <= pos, return -1. guess is a position to start scanning at (-1
-   means the end). 
+   means the end).
    Can call this with pos == -1. */
 static int find_style_at(sline_t *ln, int pos, int guess)
 {
   int ix;
   sattr_t *attr;
-  
+
   if (ln->numattr <= 0)
     return -1;
-  
-  ix = guess; 
+
+  ix = guess;
   if (ix < 0 || ix >= ln->numattr)
     ix = ln->numattr-1;
-  
+
   attr = &(ln->attr[ix]);
-  
+
   if (attr->end > pos) {
     /* scan backwards */
     for (ix--; ix >= 0; ix--) {
@@ -212,15 +212,15 @@ static int find_style_at(sline_t *ln, int pos, int guess)
 static void change_size(window_textgrid_t *cutwin, int newwid, int newhgt)
 {
   int ix, jx;
-  
+
   if (newhgt > cutwin->height) {
-    
+
     if (newhgt > cutwin->height_size) {
       int oldheightsize = cutwin->height_size;
-      while (newhgt > cutwin->height_size) 
+      while (newhgt > cutwin->height_size)
 	cutwin->height_size *= 2;
-      cutwin->linelist = (sline_t *)realloc(cutwin->linelist, 
-	cutwin->height_size * sizeof(sline_t)); 
+      cutwin->linelist = (sline_t *)realloc(cutwin->linelist,
+	cutwin->height_size * sizeof(sline_t));
       for (jx = oldheightsize; jx < cutwin->height_size; jx++) {
 	sline_t *ln = &(cutwin->linelist[jx]);
 	ln->text_size = newwid + 4;
@@ -229,7 +229,7 @@ static void change_size(window_textgrid_t *cutwin, int newwid, int newhgt)
 	ln->attr = (sattr_t *)malloc(ln->attr_size * sizeof(sattr_t));
       }
     }
-    
+
     for (jx = 0; jx < cutwin->height; jx++) {
       sline_t *ln = &(cutwin->linelist[jx]);
       /* existing valid lines */
@@ -249,7 +249,7 @@ static void change_size(window_textgrid_t *cutwin, int newwid, int newhgt)
 	}
       }
     }
-    
+
     for (jx = cutwin->height; jx < newhgt; jx++) {
       sline_t *ln = &(cutwin->linelist[jx]);
       /* recondition new lines (allocation is already done) */
@@ -262,10 +262,10 @@ static void change_size(window_textgrid_t *cutwin, int newwid, int newhgt)
       ln->dirtybeg = -1;
       ln->dirtyend = -1;
     }
-    
+
   }
   else { /* (newhgt < or = cutwin->height) */
-    
+
     for (jx = 0; jx < newhgt; jx++) {
       sline_t *ln = &(cutwin->linelist[jx]);
       /* existing valid lines */
@@ -285,14 +285,14 @@ static void change_size(window_textgrid_t *cutwin, int newwid, int newhgt)
 	}
       }
     }
-    
+
     /* everything beyond newhgt: Ignore. The valid fields are valid and
        everything else will be reconditioned if the window expands. */
   }
-  
+
   cutwin->height = newhgt;
   cutwin->width = newwid;
-  
+
   if (cutwin->dot.begline >= 0) {
     sdot_t *dot = &(cutwin->dot);
     if (dot->begline >= cutwin->height) {
@@ -313,7 +313,7 @@ static void change_size(window_textgrid_t *cutwin, int newwid, int newhgt)
 static void insert_style(sline_t *ln, int pos, int num)
 {
   int ix, numend;
-  
+
   if (num <= 0)
     return;
   if (ln->numattr + num > ln->attr_size) {
@@ -326,7 +326,7 @@ static void insert_style(sline_t *ln, int pos, int num)
     memmove(&ln->attr[pos+num], &ln->attr[pos], sizeof(sattr_t) * (numend));
   }
   ln->numattr += num;
-  
+
   for (ix=pos; ix<pos+num; ix++) {
     sattr_t *attr = &ln->attr[ix];
     attr->end = -99;
@@ -338,7 +338,7 @@ static void insert_style(sline_t *ln, int pos, int num)
 static void delete_style(sline_t *ln, int pos, int num)
 {
   int numend;
-  
+
   if (num <= 0)
     return;
   if (pos + num > ln->numattr)
@@ -372,10 +372,10 @@ XRectangle *win_textgrid_get_rect(window_t *win)
 long win_textgrid_figure_size(window_t *win, long size, int vertical)
 {
   window_textgrid_t *dwin = win->data;
-  
+
   if (vertical) {
     /* size * charwidth */
-    long textwin_w = size * dwin->font.gc[0].spacewidth; 
+    long textwin_w = size * dwin->font.gc[0].spacewidth;
     return textwin_w + 2 * prefs.textgrid.marginx;
   }
   else {
@@ -401,34 +401,34 @@ void win_textgrid_rearrange(window_t *win, XRectangle *box)
 {
   int wid, hgt;
   window_textgrid_t *cutwin = win->data;
-  
+
   cutwin->bbox = *box;
-  
+
   cutwin->cbox.x = box->x + prefs.textgrid.marginx;
   cutwin->cbox.width = box->width - 2 * prefs.textgrid.marginx;
   cutwin->cbox.y = box->y + prefs.textgrid.marginy;
   cutwin->cbox.height = box->height - 2 * prefs.textgrid.marginy;
-  
+
   wid = (cutwin->cbox.width) / cutwin->font.gc[0].spacewidth;
   hgt = (cutwin->cbox.height) / cutwin->font.lineheight;
   if (wid < 0)
     wid = 0;
   if (hgt < 0)
     hgt = 0;
-  
+
   change_size(cutwin, wid, hgt);
 }
 
 void win_textgrid_redraw(window_t *win)
 {
   window_textgrid_t *cutwin = win->data;
-  
+
   gli_draw_window_outline(&cutwin->bbox);
 
   gli_draw_window_margin(&(cutwin->font.backcolor),
-    cutwin->bbox.x, cutwin->bbox.y, 
+    cutwin->bbox.x, cutwin->bbox.y,
     cutwin->bbox.width, cutwin->bbox.height,
-    cutwin->cbox.x, cutwin->cbox.y, 
+    cutwin->cbox.x, cutwin->cbox.y,
     cutwin->width * cutwin->font.gc[0].spacewidth,
     cutwin->height * cutwin->font.lineheight);
 
@@ -437,7 +437,7 @@ void win_textgrid_redraw(window_t *win)
 
 void win_textgrid_setfocus(window_t *win, int turnon)
 {
-  window_textgrid_t *cutwin = win->data; 
+  window_textgrid_t *cutwin = win->data;
   if (turnon) {
     if (!cutwin->isactive) {
       cutwin->isactive = TRUE;
@@ -452,10 +452,10 @@ void win_textgrid_setfocus(window_t *win, int turnon)
   }
 }
 
-void win_textgrid_perform_click(window_t *win, int dir, XPoint *pt, 
+void win_textgrid_perform_click(window_t *win, int dir, XPoint *pt,
   int butnum, int clicknum, unsigned int state)
 {
-  window_textgrid_t *cutwin = win->data; 
+  window_textgrid_t *cutwin = win->data;
   XPoint posp, posp2;
   long px, px2;
   int ix;
@@ -502,7 +502,7 @@ void win_textgrid_perform_click(window_t *win, int dir, XPoint *pt,
       }
       cutwin->drag_first.endline = cutwin->drag_first.begline;
       cutwin->drag_first.endchar = cutwin->drag_first.begchar;
-      
+
       ix = compare_pos_to_dot(cutwin, &cutwin->drag_first, posp.x, posp.y);
       if (ix == 0) {
 	cutwin->dot.begline = posp.y;
@@ -554,7 +554,7 @@ void win_textgrid_perform_click(window_t *win, int dir, XPoint *pt,
     if (cutwin->drag_mouseevent) {
       if (singleclick) {
 	cutwin->owner->mouse_request = FALSE;
-	eventloop_setevent(evtype_MouseInput, cutwin->owner, 
+	eventloop_setevent(evtype_MouseInput, cutwin->owner,
 	  cutwin->drag_linkpos.begchar, cutwin->drag_linkpos.begline);
 	return;
       }
@@ -564,7 +564,7 @@ void win_textgrid_perform_click(window_t *win, int dir, XPoint *pt,
       if (singleclick) {
 	find_pos_by_loc(cutwin, pt->x, pt->y, FALSE, &posp);
 	cutwin->owner->hyperlink_request = FALSE;
-	eventloop_setevent(evtype_Hyperlink, cutwin->owner, 
+	eventloop_setevent(evtype_Hyperlink, cutwin->owner,
 	  cutwin->drag_linkid, 0);
 	return;
       }
@@ -573,16 +573,16 @@ void win_textgrid_perform_click(window_t *win, int dir, XPoint *pt,
 
 }
 
-void win_textgrid_init_line(window_t *win, char *buffer, int buflen, 
+void win_textgrid_init_line(window_t *win, char *buffer, int buflen,
   int readpos)
 {
   window_textgrid_t *cutwin = win->data;
   int len;
-  
+
   len = cutwin->width - cutwin->cursorx;
   if (buflen < len)
     len = buflen;
-  
+
   cutwin->buflen = buflen;
   cutwin->buffer = buffer;
   cutwin->inputlen = 0;
@@ -614,15 +614,15 @@ void win_textgrid_cancel_line(window_t *win, event_t *ev)
   xgrid_line_cancel(cutwin, ev);
 }
 
-static void find_pos_by_loc(window_textgrid_t *dwin, int xpos, int ypos, 
+static void find_pos_by_loc(window_textgrid_t *dwin, int xpos, int ypos,
   int addhalf, XPoint *res)
 {
   int charwidth = dwin->font.gc[0].spacewidth;
   int charheight = dwin->font.lineheight;
-  
+
   xpos -= dwin->cbox.x;
   ypos -= dwin->cbox.y;
-  
+
   if (ypos < 0) {
     res->x = 0;
     res->y = 0;
@@ -630,12 +630,12 @@ static void find_pos_by_loc(window_textgrid_t *dwin, int xpos, int ypos,
   }
   if (xpos < 0)
     xpos = 0;
-  
+
   if (addhalf)
     xpos += charwidth/2;
   xpos = xpos / charwidth;
   ypos = ypos / charheight;
-  
+
   if (xpos > dwin->width) {
     xpos = dwin->width;
   }
@@ -643,38 +643,38 @@ static void find_pos_by_loc(window_textgrid_t *dwin, int xpos, int ypos,
     ypos = dwin->height - 1;
     xpos = dwin->width;
   }
-  
+
   res->x = xpos;
   res->y = ypos;
 }
 
-static int compare_pos_to_dot(window_textgrid_t *dwin, sdot_t *dot, 
+static int compare_pos_to_dot(window_textgrid_t *dwin, sdot_t *dot,
   int pchar, int pline)
 {
   long pos, dotbeg, dotend;
   long winwidth = dwin->width;
-  
+
   pos = (long)pline * winwidth + (long)pchar;
   dotbeg = (long)dot->begline * winwidth + (long)dot->begchar;
   dotend = (long)dot->endline * winwidth + (long)dot->endchar;
-  
+
   if (pos < dotbeg)
     return 0;
   if (pos >= dotend)
     return 3;
-  
+
   if (pos < (dotbeg + dotend) / 2)
     return 1;
   else
     return 2;
 }
 
-static int dot_contains_dot(window_textgrid_t *dwin, sdot_t *bigdot, 
+static int dot_contains_dot(window_textgrid_t *dwin, sdot_t *bigdot,
   sdot_t *dot)
 {
   long bigdotbeg, bigdotend, dotbeg, dotend;
   long winwidth = dwin->width;
-  
+
   if (!DOT_EXISTS(dot) || !DOT_EXISTS(bigdot))
     return FALSE;
 
@@ -682,7 +682,7 @@ static int dot_contains_dot(window_textgrid_t *dwin, sdot_t *bigdot,
   dotend = (long)dot->endline * winwidth + (long)dot->endchar;
   bigdotbeg = (long)bigdot->begline * winwidth + (long)bigdot->begchar;
   bigdotend = (long)bigdot->endline * winwidth + (long)bigdot->endchar;
-  
+
   if (dotbeg < bigdotbeg || dotend > bigdotend)
     return FALSE;
   return TRUE;
@@ -705,7 +705,7 @@ static void flip_selection(window_textgrid_t *cutwin, sdot_t *dot)
     if (dot->begline < 0 || dot->begline >= cutwin->height) {
       return;
     }
-    xglk_draw_dot(cutwin->cbox.x + dot->begchar*charwidth, 
+    xglk_draw_dot(cutwin->cbox.x + dot->begchar*charwidth,
       cutwin->cbox.y + dot->begline*charheight + cutwin->font.lineoff,
       cutwin->font.lineoff);
     return;
@@ -719,19 +719,19 @@ static void flip_selection(window_textgrid_t *cutwin, sdot_t *dot)
     ypos2 = cutwin->cbox.y + dot->endline*charheight;
     if (dot->begline == dot->endline) {
       /* within one line */
-      if (dot->begchar != dot->endchar 
+      if (dot->begchar != dot->endchar
 	&& dot->begline >= 0 && dot->begline < cutwin->height) {
 	XFillRectangle(xiodpy, xiowin, gcflip, xpos, ypos, xpos2-xpos, charheight);
       }
     }
     else {
-      if (dot->begchar < cutwin->width 
+      if (dot->begchar < cutwin->width
 	&& dot->begline >= 0 && dot->begline < cutwin->height) {
 	/* first partial line */
-	XFillRectangle(xiodpy, xiowin, gcflip, xpos, ypos, 
+	XFillRectangle(xiodpy, xiowin, gcflip, xpos, ypos,
 	  cboxright - xpos, charheight);
       }
-      if (dot->begline+1 < dot->endline 
+      if (dot->begline+1 < dot->endline
 	&& dot->endline >= 0 && dot->begline+1 < cutwin->height) {
 	/* now, paint from begline+1 to the top of endline. */
 	int ybody = ypos+charheight;
@@ -741,26 +741,26 @@ static void flip_selection(window_textgrid_t *cutwin, sdot_t *dot)
 	if (ybody2 > cutwin->cbox.y+cutwin->cbox.height)
 	  ybody2 = cutwin->cbox.y+cutwin->cbox.height;
 	/* main body */
-	XFillRectangle(xiodpy, xiowin, gcflip, cutwin->cbox.x, ybody, 
+	XFillRectangle(xiodpy, xiowin, gcflip, cutwin->cbox.x, ybody,
 	  cboxright - cutwin->cbox.x, ybody2 - ybody);
       }
-      if (dot->endchar > 0 
+      if (dot->endchar > 0
 	&& dot->endline >= 0 && dot->endline < cutwin->height) {
 	/* last partial line */
-	XFillRectangle(xiodpy, xiowin, gcflip, cutwin->cbox.x, ypos2, 
+	XFillRectangle(xiodpy, xiowin, gcflip, cutwin->cbox.x, ypos2,
 	  xpos2 - cutwin->cbox.x, charheight);
       }
     }
   }
 }
 
-static void refiddle_selection(window_textgrid_t *cutwin, 
+static void refiddle_selection(window_textgrid_t *cutwin,
   sdot_t *olddot, sdot_t *newdot)
 {
   sdot_t tmpdot;
   int ix;
-  
-  if (DOT_LENGTH_ZERO(olddot) || DOT_LENGTH_ZERO(newdot) 
+
+  if (DOT_LENGTH_ZERO(olddot) || DOT_LENGTH_ZERO(newdot)
     || olddot->begline < 0 || newdot->begline < 0) {
     flip_selection(cutwin, olddot);
     flip_selection(cutwin, newdot);
@@ -769,12 +769,12 @@ static void refiddle_selection(window_textgrid_t *cutwin,
 
   if (olddot->begline == newdot->begline && olddot->begchar == newdot->begchar) {
     /* start at same place */
-    
+
     if (olddot->endline == newdot->endline && olddot->endchar == newdot->endchar) {
       /* identical! */
       return;
     }
-    
+
     ix = compare_pos_to_dot(cutwin, olddot, newdot->endchar, newdot->endline);
     if (ix == 3) {
       tmpdot.begline = olddot->endline;
@@ -791,10 +791,10 @@ static void refiddle_selection(window_textgrid_t *cutwin,
     flip_selection(cutwin, &tmpdot);
     return;
   }
-  
+
   if (olddot->endline == newdot->endline && olddot->endchar == newdot->endchar) {
     /* end at same place */
-    
+
     ix = compare_pos_to_dot(cutwin, olddot, newdot->begchar, newdot->begline);
     if (ix == 0) {
       tmpdot.begline = newdot->begline;
@@ -821,7 +821,7 @@ static void win_textgrid_layout(window_textgrid_t *cutwin, int drawall)
   int ix, ix2, jx, sx;
   int startln, endln, startchar, endchar;
   sattr_t *attr;
-  
+
   int charwidth = cutwin->font.gc[0].spacewidth;
   int charheight = cutwin->font.lineheight;
   fontref_t *gclist = cutwin->font.gc;
@@ -842,7 +842,7 @@ static void win_textgrid_layout(window_textgrid_t *cutwin, int drawall)
 	endln = cutwin->height;
     }
   }
-  
+
   if (startln >= endln) {
     /* no text changes */
     if (cutwin->lastdot.begline != cutwin->dot.begline
@@ -854,14 +854,14 @@ static void win_textgrid_layout(window_textgrid_t *cutwin, int drawall)
     }
     return;
   }
-  
+
   /* flip dot off */
   flip_selection(cutwin, &cutwin->lastdot);
   cutwin->lastdot = cutwin->dot;
-  
+
   for (jx = startln; jx < endln; jx++) {
     sline_t *ln = &(cutwin->linelist[jx]);
-    
+
     if (drawall) {
       startchar = 0;
       endchar = cutwin->width;
@@ -874,7 +874,7 @@ static void win_textgrid_layout(window_textgrid_t *cutwin, int drawall)
       if (endchar > cutwin->width)
 	endchar = cutwin->width;
     }
-    
+
     ix = startchar;
     sx = find_style_at(ln, ix, 0);
     while (ix < endchar) {
@@ -882,18 +882,18 @@ static void win_textgrid_layout(window_textgrid_t *cutwin, int drawall)
 	attr = &(ln->attr[sx]);
 	ix2 = attr->end;
       }
-      else { 
+      else {
 	attr = NULL;
 	ix2 = cutwin->width;
       }
       if (ix2 > endchar)
 	ix2 = endchar;
-      
+
       if (!attr || attr->blank) {
 	/* ### This may screw up styled whitespace (bkcolors) ### */
 	xglk_clearfor_string(&(cutwin->font.backcolor),
-	  cutwin->cbox.x+ix*charwidth, 
-	  cutwin->cbox.y+jx*charheight, 
+	  cutwin->cbox.x+ix*charwidth,
+	  cutwin->cbox.y+jx*charheight,
 	  (ix2-ix)*charwidth, charheight);
       }
       else {
@@ -907,15 +907,15 @@ static void win_textgrid_layout(window_textgrid_t *cutwin, int drawall)
           cutwin->cbox.y+jx*charheight+cutwin->font.lineoff,
           ln->text+ix, (ix2-ix));
       }
-      
+
       ix = ix2;
       sx++;
     }
-    
+
     ln->dirtybeg = -1;
     ln->dirtyend = -1;
   }
-  
+
   cutwin->dirtybeg = -1;
   cutwin->dirtyend = -1;
 
@@ -928,34 +928,34 @@ void win_textgrid_add(window_textgrid_t *cutwin, char ch)
   sline_t *ln;
   sattr_t *oattr;
   int sx, sx2, ix, pos;
-  
+
   if (cutwin->cursorx >= cutwin->width) {
     cutwin->cursorx = 0;
     cutwin->cursory++;
   }
   if (cutwin->cursory >= cutwin->height)
     return;
-  
+
   if (ch == '\n') {
     cutwin->cursorx = 0;
     cutwin->cursory++;
     return;
   }
-  
+
   if (cutwin->dirtybeg < 0 || cutwin->dirtybeg > cutwin->cursory)
     cutwin->dirtybeg = cutwin->cursory;
   if (cutwin->dirtyend < 0 || cutwin->dirtyend < cutwin->cursory+1)
     cutwin->dirtyend = cutwin->cursory+1;
   ln = &(cutwin->linelist[cutwin->cursory]);
-  
+
   pos = cutwin->cursorx;
   if (ln->dirtybeg < 0 || ln->dirtybeg > pos)
     ln->dirtybeg = pos;
   if (ln->dirtyend < 0 || ln->dirtyend < pos+1)
     ln->dirtyend = pos+1;
-  
+
   sx = find_style_at(ln, pos, -1);
-  
+
   if (sx >= 0 && sx < ln->numattr) {
     oattr = &(ln->attr[sx]);
   }
@@ -963,7 +963,7 @@ void win_textgrid_add(window_textgrid_t *cutwin, char ch)
     oattr = NULL;
     sx = ln->numattr;
   }
-  
+
   if (oattr && !oattr->blank && ATTRMATCH(oattr, cutwin->owner)) {
     /* within a matching style; leave alone */
   }
@@ -1052,14 +1052,14 @@ void win_textgrid_add(window_textgrid_t *cutwin, char ch)
       /* split current (or current NULL) */
       if (oattr) {
 	insert_style(ln, sx, 2);
-	ln->attr[sx] = ln->attr[sx+2]; 
+	ln->attr[sx] = ln->attr[sx+2];
 	ln->attr[sx].end = pos;
 	nattr = &(ln->attr[sx+1]);
 	nattr->end = pos+1;
       }
       else {
 	insert_style(ln, ln->numattr, 2);
-	nattr = &(ln->attr[ln->numattr-2]); 
+	nattr = &(ln->attr[ln->numattr-2]);
 	nattr->blank = TRUE;
 	nattr->style = 0;
 	nattr->linkid = 0;
@@ -1068,16 +1068,16 @@ void win_textgrid_add(window_textgrid_t *cutwin, char ch)
 	nattr->end = pos+1;
       }
     }
-    
+
     if (nattr) {
       nattr->blank = FALSE;
       nattr->style = cutwin->owner->style;
       nattr->linkid = cutwin->owner->linkid;
     }
   }
-  
+
   ln->text[pos] = ch;
-  cutwin->cursorx++; 
+  cutwin->cursorx++;
   /* note that this can leave the cursor out-of-bounds. It's handled at the
      beginning of this function. */
 }
@@ -1095,7 +1095,7 @@ void win_textgrid_set_pos(window_textgrid_t *cutwin, glui32 xpos, glui32 ypos)
 void win_textgrid_clear_window(window_textgrid_t *cutwin)
 {
   int ix;
-  
+
   for (ix=0; ix<cutwin->height; ix++) {
     sline_t *ln;
     ln = &(cutwin->linelist[ix]);
@@ -1103,20 +1103,20 @@ void win_textgrid_clear_window(window_textgrid_t *cutwin)
     ln->dirtybeg = 0;
     ln->dirtyend = cutwin->width;
   }
-  
+
   cutwin->dirtybeg = 0;
   cutwin->dirtyend = cutwin->height;
-  
+
   cutwin->cursorx = 0;
   cutwin->cursory = 0;
 }
 
-static void insert_input(window_textgrid_t *cutwin, 
+static void insert_input(window_textgrid_t *cutwin,
   int pos, char *buf, int len)
 {
   int ix, left;
   sline_t *ln = &cutwin->linelist[cutwin->inputdot.begline];
-  
+
   if (cutwin->inputlen >= cutwin->inputmaxlen) {
     cutwin->dot.begchar = pos;
     cutwin->dot.begline = cutwin->inputdot.begline;
@@ -1129,9 +1129,9 @@ static void insert_input(window_textgrid_t *cutwin,
   if (len > cutwin->inputmaxlen - cutwin->inputlen) {
     len = cutwin->inputmaxlen - cutwin->inputlen;
   }
-  
+
   for (ix = cutwin->inputdot.begchar + cutwin->inputlen + len - 1;
-       ix >= pos + len; 
+       ix >= pos + len;
        ix--) {
     cutwin->cursorx = ix;
     win_textgrid_add(cutwin, ln->text[ix-len]);
@@ -1152,7 +1152,7 @@ static void kill_input(window_textgrid_t *cutwin, int beg, int end)
   int diff, post;
   int pos;
   sline_t *ln = &cutwin->linelist[cutwin->inputdot.begline];
-  
+
   if (beg < cutwin->inputdot.begchar)
     beg = cutwin->inputdot.begchar;
   if (end > cutwin->inputdot.begchar + cutwin->inputlen)
@@ -1170,9 +1170,9 @@ static void kill_input(window_textgrid_t *cutwin, int beg, int end)
   for (; pos < end+post; pos++) {
     win_textgrid_add(cutwin, ' ');
   }
-  
+
   cutwin->inputlen -= diff;
-  
+
   cutwin->dot.begchar = beg;
   cutwin->dot.begline = cutwin->inputdot.begline;
   collapse_dot_back(cutwin);
@@ -1188,10 +1188,10 @@ static void xgrid_line_cancel(window_textgrid_t *cutwin, event_t *ev)
   gidispatch_rock_t inarrayrock;
 
   /* same as xged_enter(), but skip the unnecessary stuff. */
-  
-  if (!cutwin->buffer) 
+
+  if (!cutwin->buffer)
     return;
-  
+
   buffer = cutwin->buffer;
   buflen = cutwin->buflen;
   inarrayrock = cutwin->inarrayrock;
@@ -1221,19 +1221,19 @@ static void xgrid_line_cancel(window_textgrid_t *cutwin, event_t *ev)
     cutwin->dotlen = 0;
     xtext_layout();
     }*/
-  
+
   if (cutwin->owner->echostr) {
     window_t *oldwin = cutwin->owner;
-    /*gli_stream_echo_line(cutwin->owner->echostr, 
+    /*gli_stream_echo_line(cutwin->owner->echostr,
       ln->text+cutwin->inputdot.begchar, cutwin->inputlen*sizeof(char));*/
-    gli_stream_echo_line(cutwin->owner->echostr, 
+    gli_stream_echo_line(cutwin->owner->echostr,
       buffer, len2*sizeof(char));
   }
 
   cutwin->cursorx = 0;
   cutwin->cursory = cutwin->inputdot.begline + 1;
   win_textgrid_layout(cutwin, FALSE);
-  
+
   /* create event, and set everything blank. */
   ev->type = evtype_LineInput;
   ev->val1 = len2;
@@ -1343,7 +1343,7 @@ void xgc_grid_movecursor(window_textgrid_t *cutwin, int op)
     }
     break;
   }
-  
+
   win_textgrid_layout(cutwin, FALSE);
 }
 
@@ -1351,24 +1351,24 @@ void xgc_grid_insert(window_textgrid_t *cutwin, int ch)
 {
   char realch;
   int ix, pos;
-  
+
   /* ### not perfect -- should be all typable chars */
   if (ch < 32 || ch >= 127)
     ch = ' ';
 
   realch = ch;
-  
+
   if (!DOT_EXISTS(&cutwin->dot)) {
     cutwin->dot.begline = 0;
     cutwin->dot.begchar = 0;
     collapse_dot_back(cutwin);
   }
-  
+
   if (!DOT_LENGTH_ZERO(&cutwin->dot)) {
     kill_input(cutwin, cutwin->dot.begchar, cutwin->dot.endchar);
     collapse_dot_back(cutwin);
   }
-  
+
   ix = compare_pos_to_dot(cutwin, &cutwin->inputdot, cutwin->dot.begchar, cutwin->dot.begline);
   if (ix == 0) {
     pos = cutwin->inputdot.begchar;
@@ -1382,9 +1382,9 @@ void xgc_grid_insert(window_textgrid_t *cutwin, int ch)
       pos = cutwin->inputdot.begchar + cutwin->inputlen;
   }
   cutwin->cursory = cutwin->inputdot.begline;
-  
+
   insert_input(cutwin, pos, &realch, 1);
-  
+
   win_textgrid_layout(cutwin, FALSE);
 }
 
@@ -1392,23 +1392,23 @@ void xgc_grid_delete(window_textgrid_t *cutwin, int op)
 {
   if (!DOT_EXISTS(&cutwin->dot))
     return;
-  
+
   if (!dot_contains_dot(cutwin, &cutwin->inputdot, &cutwin->dot))
     return;
-  
-  if (cutwin->dot.endline > cutwin->inputdot.begline 
+
+  if (cutwin->dot.endline > cutwin->inputdot.begline
     || cutwin->dot.endchar > cutwin->inputdot.begchar + cutwin->inputmaxlen) {
     cutwin->dot.endline = cutwin->inputdot.begline;
     cutwin->dot.endchar = cutwin->inputdot.begchar + cutwin->inputmaxlen;
   }
-  
-  if (!DOT_LENGTH_ZERO(&cutwin->dot) 
+
+  if (!DOT_LENGTH_ZERO(&cutwin->dot)
     && (op == op_BackChar || op == op_ForeChar)) {
     kill_input(cutwin, cutwin->dot.begchar, cutwin->dot.endchar);
     win_textgrid_layout(cutwin, FALSE);
     return;
   }
-  
+
   collapse_dot(cutwin);
 
   switch (op) {
@@ -1424,27 +1424,27 @@ void xgc_grid_delete(window_textgrid_t *cutwin, int op)
   win_textgrid_layout(cutwin, FALSE);
 }
 
-static char *xgrid_alloc_selection(window_textgrid_t *cutwin, 
+static char *xgrid_alloc_selection(window_textgrid_t *cutwin,
   sdot_t *dot, long *lenv)
 {
   long len, cx;
   int jx, sx;
   char *res;
-  
+
   if (!DOT_EXISTS(dot) || DOT_LENGTH_ZERO(dot))
     return NULL;
-  
+
   len = (dot->endline - dot->begline + 1) * (cutwin->width + 1) + 1;
   res = malloc(len);
   if (!res)
     return NULL;
-  
+
   cx = 0;
-  
+
   for (jx = dot->begline; jx <= dot->endline; jx++) {
     int begchar, endchar;
     sline_t *ln = &(cutwin->linelist[jx]);
-    
+
     if (jx == dot->begline)
       begchar = dot->begchar;
     else
@@ -1453,7 +1453,7 @@ static char *xgrid_alloc_selection(window_textgrid_t *cutwin,
       endchar = dot->endchar;
     else
       endchar = cutwin->width;
-    
+
     if (endchar >= begchar) {
       int ix, ix2;
       sattr_t *attr;
@@ -1464,7 +1464,7 @@ static char *xgrid_alloc_selection(window_textgrid_t *cutwin,
 	  attr = &(ln->attr[sx]);
 	  ix2 = attr->end;
 	}
-	else { 
+	else {
 	  attr = NULL;
 	  ix2 = cutwin->width;
 	}
@@ -1491,18 +1491,18 @@ static char *xgrid_alloc_selection(window_textgrid_t *cutwin,
 	ix = ix2;
 	sx++;
       }
-      
+
       if (jx < dot->endline) {
 	res[cx] = '\n';
 	cx++;
       }
     }
   }
-  
+
   if (cx > len) {
     gli_strict_warning("xgrid_alloc_selection: overran allocation");
   }
-  
+
   *lenv = cx;
   return res;
 }
@@ -1511,14 +1511,14 @@ void xgc_grid_cutbuf(window_textgrid_t *cutwin, int op)
 {
   long len, num;
   char *buf, *cx;
-  
+
   if (op != op_Copy) {
     if (!cutwin->buffer) {
       xmsg_set_message("You are not editing input in this window.", FALSE);
       return;
     }
   }
-  
+
   switch (op) {
   case op_Copy:
     buf = xgrid_alloc_selection(cutwin, &cutwin->dot, &len);
@@ -1561,7 +1561,7 @@ void xgc_grid_cutbuf(window_textgrid_t *cutwin, int op)
     break;
   case op_Untype:
     if (cutwin->inputlen > 0) {
-      kill_input(cutwin, cutwin->inputdot.begchar, 
+      kill_input(cutwin, cutwin->inputdot.begchar,
 	cutwin->inputdot.begchar + cutwin->inputlen);
     }
     break;
@@ -1581,15 +1581,15 @@ void xgc_grid_enter(window_textgrid_t *cutwin, int op)
   if (op != op_Enter)
     return;
 
-  if (!cutwin->buffer) 
+  if (!cutwin->buffer)
     return;
 
   buffer = cutwin->buffer;
   buflen = cutwin->buflen;
   inarrayrock = cutwin->inarrayrock;
-  
+
   ln = &cutwin->linelist[cutwin->inputdot.begline];
-  
+
   cutwin->owner->style = cutwin->originalattr;
 
   inputlen = cutwin->inputlen;
@@ -1618,10 +1618,10 @@ void xgc_grid_enter(window_textgrid_t *cutwin, int op)
 
   if (cutwin->owner->echostr) {
     window_t *oldwin = cutwin->owner;
-    gli_stream_echo_line(cutwin->owner->echostr, 
+    gli_stream_echo_line(cutwin->owner->echostr,
       buffer, len2*sizeof(char));
   }
-  
+
   cutwin->dot.begline = cutwin->inputdot.begline;
   cutwin->dot.begchar = cutwin->inputdot.begchar + inputlen;
   collapse_dot_back(cutwin);

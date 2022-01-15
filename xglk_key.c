@@ -6,8 +6,8 @@
 #include "xg_win_textgrid.h"
 #include "xg_win_textbuf.h"
 
-/* The first 256 commands are the standard character set. 
-   The second 256 are special keyboard keys. 
+/* The first 256 commands are the standard character set.
+   The second 256 are special keyboard keys.
    The third 256 are option-key combinations. */
 #define NUMCOMMANDS (768)
 #define NUMMACROS (256)
@@ -18,7 +18,7 @@ typedef struct keymap_struct {
 } keymap_t;
 
 typedef struct binding_struct {
-  unsigned int key; 
+  unsigned int key;
   char *name;
 } binding_t;
 
@@ -87,7 +87,7 @@ static cmdentry_t mastertable[] = {
   {xgc_work_meta, op_Cancel, 1, "cancel"},
   {xgc_work_meta, op_Meta, 0, "meta"},
   {xgc_work_meta, op_ExplainKey, 0, "explain-key"},
-  
+
   {xgc_noop, -1, 0, "no-op"},
 
   {NULL, 0, 0, NULL}
@@ -270,7 +270,7 @@ int init_xkey()
   for (ix=0; ix<NUMMACROS; ix++) {
     macrolist[ix] = NULL;
   }
-  
+
   global_map = new_keymap(global_bindings);
   if (!global_map)
     return FALSE;
@@ -279,9 +279,9 @@ int init_xkey()
   win_textbuffer_paging_map = new_keymap(win_textbuffer_paging_bindings);
   win_textbuffer_char_map = new_keymap(win_textbuffer_char_bindings);
   win_textbuffer_line_map = new_keymap(win_textbuffer_line_bindings);
-  if (!win_textbuffer_map 
-    || !win_textbuffer_paging_map 
-    || !win_textbuffer_char_map 
+  if (!win_textbuffer_map
+    || !win_textbuffer_paging_map
+    || !win_textbuffer_char_map
     || !win_textbuffer_line_map)
     return FALSE;
   keymap_add_multiple(win_textbuffer_char_map, range_Typable, "getchar-self");
@@ -291,8 +291,8 @@ int init_xkey()
   win_textgrid_map = new_keymap(win_textgrid_bindings);
   win_textgrid_char_map = new_keymap(win_textgrid_char_bindings);
   win_textgrid_line_map = new_keymap(win_textgrid_line_bindings);
-  if (!win_textgrid_map 
-    || !win_textgrid_char_map 
+  if (!win_textgrid_map
+    || !win_textgrid_char_map
     || !win_textgrid_line_map)
     return FALSE;
   keymap_add_multiple(win_textgrid_char_map, range_Typable, "getchar-self");
@@ -326,11 +326,11 @@ static keymap_t *new_keymap(binding_t *bindlist)
   res = (keymap_t *)malloc(sizeof(keymap_t));
   if (!res)
     return NULL;
-  
+
   for (ix=0; ix<NUMCOMMANDS; ix++) {
     res->keycmds[ix] = NULL;
   }
-  
+
   for (bx=bindlist; bx->name; bx++) {
     ix = (bx->key);
     cmd = xkey_find_cmd_by_name(bx->name);
@@ -347,13 +347,13 @@ static void keymap_add_multiple(keymap_t *map, int range, char *func)
 {
   cmdentry_t *cmd;
   int ix;
-  
+
   cmd = xkey_find_cmd_by_name(func);
-  
+
   if (!cmd) {
     return;
   }
-  
+
   /* ### both of these are non-ideal */
 
   switch (range) {
@@ -379,14 +379,14 @@ static void keymap_add_multiple(keymap_t *map, int range, char *func)
 void xkey_set_macro(int key, char *str, int chown)
 {
   char *cx;
-  
+
   key &= MACRO_MASK;
 
   if (macrolist[key]) {
     free(macrolist[key]);
     macrolist[key] = NULL;
   }
-  
+
   if (str) {
     if (chown) {
       macrolist[key] = str;
@@ -401,13 +401,13 @@ void xkey_set_macro(int key, char *str, int chown)
 
 #define TEST_KEY_MAP(mp, ky, rs)  \
   if ((mp) && ((rs) = (mp)->keycmds[ky]))  \
-    return (rs); 
+    return (rs);
 
 /* check keymap for a single window -- or nonwindow. */
 static cmdentry_t *xkey_parse_key(int key, window_t *win)
 {
   cmdentry_t *res;
-  
+
   if (!win) {
     TEST_KEY_MAP(global_map, key, res);
     if (xmsg_msgmode) {
@@ -462,14 +462,14 @@ static char *xkey_get_key_name(int key)
 
   if ((key & 0xff00) == 0x100) {
     key &= 0xff;
-    ksym = (KeySym)((XK_Home & 0xff00) | key); 
+    ksym = (KeySym)((XK_Home & 0xff00) | key);
     name = XKeysymToString(ksym);
     if (!name)
       name = "Unknown key";
     strcpy(buf, name);
     return buf;
   }
-  
+
   if (key & 0xff00) {
     key &= 0xff;
     prefix = "meta-";
@@ -573,37 +573,37 @@ void xkey_perform_key(int key, unsigned int state)
 	switch (ksym) {
 	case XK_Left:
 	case XK_KP_Left:
-	  op = keycode_Left; 
+	  op = keycode_Left;
 	  break;
 	case XK_Right:
 	case XK_KP_Right:
-	  op = keycode_Right; 
+	  op = keycode_Right;
 	  break;
 	case XK_Up:
 	case XK_KP_Up:
-	  op = keycode_Up; 
+	  op = keycode_Up;
 	  break;
 	case XK_Down:
 	case XK_KP_Down:
-	  op = keycode_Down; 
+	  op = keycode_Down;
 	  break;
 	case XK_Page_Up:
 	case XK_KP_Page_Up:
-	  op = keycode_PageUp; 
+	  op = keycode_PageUp;
 	  break;
 	case XK_Page_Down:
 	case XK_KP_Page_Down:
-	  op = keycode_PageDown; 
+	  op = keycode_PageDown;
 	  break;
 	case XK_Home:
 	case XK_KP_Home:
 	case XK_Begin:
 	case XK_KP_Begin:
-	  op = keycode_Home; 
+	  op = keycode_Home;
 	  break;
 	case XK_End:
 	case XK_KP_End:
-	  op = keycode_End; 
+	  op = keycode_End;
 	  break;
 	case XK_Return:
 	case XK_KP_Enter:
@@ -678,7 +678,7 @@ void xkey_perform_key(int key, unsigned int state)
       op = command->operand;
     }
     (*(command->func))(cmdwin, op);
-    
+
   }
   else {
     char buf[128];
@@ -692,26 +692,26 @@ void xkey_perform_key(int key, unsigned int state)
 void xkey_guess_focus()
 {
   window_t *altwin;
-  
+
   if (xmsg_msgmode) {
     gli_set_focus(NULL);
     return;
   }
 
-  if (gli_focuswin 
+  if (gli_focuswin
     && (gli_focuswin->line_request || gli_focuswin->char_request)) {
     return;
   }
-  
+
   altwin = gli_focuswin;
   do {
     altwin = gli_window_fixiterate(altwin);
-    if (altwin 
+    if (altwin
       && (altwin->line_request || altwin->char_request)) {
       break;
     }
   } while (altwin != gli_focuswin);
-  
+
   gli_set_focus(altwin);
 }
 
@@ -730,7 +730,7 @@ void xgc_work_meta(struct glk_window_struct *dummy, int op)
     modify_mode = op_ExplainKey;
     break;
   /*###case op_DefineMacro:
-    xmsg_set_message("Select some text, and type a macro command key to define.", 
+    xmsg_set_message("Select some text, and type a macro command key to define.",
       FALSE);
     modify_mode = op_DefineMacro;
     break; ###*/

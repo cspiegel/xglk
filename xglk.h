@@ -51,7 +51,7 @@ typedef struct cmdentry_struct {
   int ignoremods;
   char *name;
 } cmdentry_t;
-  
+
 typedef struct fontnamespec_struct fontnamespec_t;
 
 typedef struct fontprefs_struct {
@@ -67,8 +67,8 @@ typedef struct fontprefs_struct {
 } fontprefs_t;
 
 typedef struct winprefs_struct {
-  int marginx, marginy; 
-  int leading; 
+  int marginx, marginy;
+  int leading;
   XColor forecolor;
   XColor linkcolor;
   XColor backcolor;
@@ -128,9 +128,9 @@ typedef struct wegscroll_struct {
   XRectangle box;
   int vistop, visbot;
 
-  int drag_scrollmode; /* 0 for click in elevator; 1 for dragged in elevator; 
+  int drag_scrollmode; /* 0 for click in elevator; 1 for dragged in elevator;
 			  2 for endzones; 3 for click in background */
-  int drag_hitypos; 
+  int drag_hitypos;
   long drag_origline;
 } wegscroll_t;
 
@@ -165,28 +165,28 @@ extern preferences_t prefs;
 
 extern int xglk_init(int argc, char *argv[], glkunix_startup_t *startdata);
 extern int xglk_open_connection(char *progname);
-extern int xglk_init_preferences(int argc, char *argv[], 
+extern int xglk_init_preferences(int argc, char *argv[],
   glkunix_startup_t *startdata);
-extern void xglk_build_fontname(fontnamespec_t *spec, char *buf, 
+extern void xglk_build_fontname(fontnamespec_t *spec, char *buf,
   int size, int weight, int oblique, int proportional);
 extern void xglk_event_loop(event_t *ev, glui32 millisec);
 extern void xglk_event_poll(event_t *ev, glui32 millisec);
 extern void xglk_arrange_window(void);
 extern void xglk_invalidate(XRectangle *box);
 extern void xglk_redraw(void);
-extern void xglk_perform_click(int dir, XPoint *pt, int butnum, 
+extern void xglk_perform_click(int dir, XPoint *pt, int butnum,
   unsigned int state);
 extern void xglk_relax_memory(void);
-extern void gli_draw_window_highlight(struct glk_window_struct *win, 
+extern void gli_draw_window_highlight(struct glk_window_struct *win,
   int turnon);
 extern void gli_draw_window_outline(XRectangle *winbox);
-extern void gli_draw_window_margin(XColor *colref, 
+extern void gli_draw_window_margin(XColor *colref,
   int outleft, int outtop, int outwidth, int outheight,
   int inleft, int intop, int inwidth, int inheight);
 extern void xglk_draw_dot(int xpos, int ypos, int linehgt);
 extern void xglk_clearfor_string(XColor *colref, int xpos, int ypos,
   int width, int height);
-extern void xglk_draw_string(fontref_t *fontref, int islink, 
+extern void xglk_draw_string(fontref_t *fontref, int islink,
   int width, int xpos, int ypos, char *str, int len);
 
 extern void xglk_store_scrap(char *str, long len);
@@ -207,13 +207,13 @@ extern void xgc_msg_delete(int op);
 extern void xgc_msg_movecursor(int op);
 extern void xgc_msg_enter(int op);
 
-extern void xweg_init_scrollbar(wegscroll_t *weg, void *rock, 
+extern void xweg_init_scrollbar(wegscroll_t *weg, void *rock,
   cmdfunc_ptr scrollfunc, cmdfunc_ptr scrolltofunc);
 extern void xweg_draw_scrollbar(wegscroll_t *weg);
-extern void xweg_adjust_scrollbar(wegscroll_t *weg, int numlines, 
+extern void xweg_adjust_scrollbar(wegscroll_t *weg, int numlines,
   int scrollline, int linesperpage);
-extern void xweg_click_scrollbar(wegscroll_t *weg, int dir, XPoint *pt, 
-  int butnum, int clicknum, unsigned int state, 
+extern void xweg_click_scrollbar(wegscroll_t *weg, int dir, XPoint *pt,
+  int butnum, int clicknum, unsigned int state,
   int numlines, int scrollline, int linesperpage);
 
 extern int init_xkey(void);
@@ -223,7 +223,7 @@ extern void xkey_set_macro(int key, char *str, int chown);
 extern void xkey_guess_focus(void);
 
 extern int xres_is_resource_map(void);
-extern void xres_get_resource(glui32 usage, glui32 id, 
+extern void xres_get_resource(glui32 usage, glui32 id,
   FILE **file, long *pos, long *len, glui32 *type);
 
 extern int init_pictures(void);
@@ -231,7 +231,7 @@ extern int init_picture_colortab(XColor *cols, int numcols);
 extern void picture_relax_memory(void);
 extern picture_t *picture_find(unsigned long id);
 extern void picture_release(picture_t *pic);
-extern void picture_draw(picture_t *pic, Drawable dest, int xpos, int ypos, 
+extern void picture_draw(picture_t *pic, Drawable dest, int xpos, int ypos,
   int width, int height, XRectangle *clipbox);
 
 #define op_Cancel (0)

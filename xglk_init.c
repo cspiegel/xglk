@@ -15,7 +15,7 @@ int xglk_open_connection(char *progname)
     fprintf(stderr, "%s: could not open display.\n", progname);
     return FALSE;
   }
-  
+
   /* init all the X stuff */
   xioscn = DefaultScreen(xiodpy);
   vis = DefaultVisual(xiodpy, xioscn);
@@ -26,7 +26,7 @@ int xglk_open_connection(char *progname)
     xiobackstore = TRUE;
 
   imageslegal = FALSE;
-  if (xiodepth == 1 || xiodepth == 8 || xiodepth == 16 
+  if (xiodepth == 1 || xiodepth == 8 || xiodepth == 16
     || xiodepth == 24 || xiodepth == 32) {
     imageslegal = TRUE;
   }
@@ -42,13 +42,13 @@ int xglk_open_connection(char *progname)
     switch (vis->class) {
     case StaticGray:
       printf("StaticGray"); break;
-    case GrayScale: 
+    case GrayScale:
       printf("GrayScale"); break;
     case StaticColor:
       printf("StaticColor"); break;
     case PseudoColor:
       printf("PseudoColor"); break;
-    case TrueColor:  
+    case TrueColor:
       printf("TrueColor"); break;
     case DirectColor:
       printf("DirectColor"); break;

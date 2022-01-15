@@ -6,7 +6,7 @@
     distributed under the MIT license; see the "LICENSE" file.
 */
 
-/* This code should be linked into every Glk library, without change. 
+/* This code should be linked into every Glk library, without change.
     Get the latest version from the URL above. */
 
 #include "glk.h"
@@ -270,10 +270,10 @@ gidispatch_function_t *gidispatch_get_function_by_id(glui32 id)
 {
     int top, bot, val;
     gidispatch_function_t *func;
-    
+
     bot = 0;
     top = NUMFUNCTIONS;
-    
+
     while (1) {
         val = (top+bot) / 2;
         func = &(function_table[val]);
@@ -288,7 +288,7 @@ gidispatch_function_t *gidispatch_get_function_by_id(glui32 id)
             top = val;
         }
     }
-    
+
     return NULL;
 }
 
@@ -387,7 +387,7 @@ char *gidispatch_prototype(glui32 funcnum)
         case 0x0084: /* put_buffer */
             return "1>+#Cn:";
         case 0x0085: /* put_buffer_stream */
-            return "2Qb>+#Cn:"; 
+            return "2Qb>+#Cn:";
         case 0x0086: /* set_style */
             return "1Iu:";
         case 0x0087: /* set_style_stream */
@@ -395,9 +395,9 @@ char *gidispatch_prototype(glui32 funcnum)
         case 0x0090: /* get_char_stream */
             return "2Qb:Iu";
         case 0x0091: /* get_line_stream */
-            return "3Qb<+#Cn:Iu"; 
+            return "3Qb<+#Cn:Iu";
         case 0x0092: /* get_buffer_stream */
-            return "3Qb<+#Cn:Iu"; 
+            return "3Qb<+#Cn:Iu";
         case 0x00A0: /* char_to_lower */
             return "2Cu:Cu";
         case 0x00A1: /* char_to_upper */
@@ -474,7 +474,7 @@ char *gidispatch_prototype(glui32 funcnum)
         case 0x0103: /* cancel_hyperlink_event */
             return "1Qa:";
 #endif /* GLK_MODULE_HYPERLINKS */
-            
+
         default:
             return NULL;
     }
@@ -506,7 +506,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             }
             break;
         case 0x0020: /* window_iterate */
-            if (arglist[1].ptrflag) 
+            if (arglist[1].ptrflag)
                 arglist[4].opaqueref = glk_window_iterate(arglist[0].opaqueref, &arglist[2].uint);
             else
                 arglist[3].opaqueref = glk_window_iterate(arglist[0].opaqueref, NULL);
@@ -518,7 +518,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             arglist[1].opaqueref = glk_window_get_root();
             break;
         case 0x0023: /* window_open */
-            arglist[6].opaqueref = glk_window_open(arglist[0].opaqueref, arglist[1].uint, 
+            arglist[6].opaqueref = glk_window_open(arglist[0].opaqueref, arglist[1].uint,
                 arglist[2].uint, arglist[3].uint, arglist[4].uint);
             break;
         case 0x0024: /* window_close */
@@ -556,7 +556,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             }
             break;
         case 0x0026: /* window_set_arrangement */
-            glk_window_set_arrangement(arglist[0].opaqueref, arglist[1].uint, 
+            glk_window_set_arrangement(arglist[0].opaqueref, arglist[1].uint,
                 arglist[2].uint, arglist[3].opaqueref);
             break;
         case 0x0027: /* window_get_arrangement */
@@ -601,7 +601,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             glk_window_clear(arglist[0].opaqueref);
             break;
         case 0x002B: /* window_move_cursor */
-            glk_window_move_cursor(arglist[0].opaqueref, arglist[1].uint, 
+            glk_window_move_cursor(arglist[0].opaqueref, arglist[1].uint,
                 arglist[2].uint);
             break;
         case 0x002C: /* window_get_stream */
@@ -620,7 +620,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             arglist[2].opaqueref = glk_window_get_sibling(arglist[0].opaqueref);
             break;
         case 0x0040: /* stream_iterate */
-            if (arglist[1].ptrflag) 
+            if (arglist[1].ptrflag)
                 arglist[4].opaqueref = glk_stream_iterate(arglist[0].opaqueref, &arglist[2].uint);
             else
                 arglist[3].opaqueref = glk_stream_iterate(arglist[0].opaqueref, NULL);
@@ -629,15 +629,15 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             arglist[2].uint = glk_stream_get_rock(arglist[0].opaqueref);
             break;
         case 0x0042: /* stream_open_file */
-            arglist[4].opaqueref = glk_stream_open_file(arglist[0].opaqueref, arglist[1].uint, 
+            arglist[4].opaqueref = glk_stream_open_file(arglist[0].opaqueref, arglist[1].uint,
                 arglist[2].uint);
             break;
         case 0x0043: /* stream_open_memory */
-            if (arglist[0].ptrflag) 
-                arglist[6].opaqueref = glk_stream_open_memory(arglist[1].array, 
+            if (arglist[0].ptrflag)
+                arglist[6].opaqueref = glk_stream_open_memory(arglist[1].array,
                     arglist[2].uint, arglist[3].uint, arglist[4].uint);
             else
-                arglist[4].opaqueref = glk_stream_open_memory(NULL, 
+                arglist[4].opaqueref = glk_stream_open_memory(NULL,
                     0, arglist[1].uint, arglist[2].uint);
             break;
         case 0x0044: /* stream_close */
@@ -665,22 +665,22 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             arglist[1].opaqueref = glk_stream_get_current();
             break;
         case 0x0060: /* fileref_create_temp */
-            arglist[3].opaqueref = glk_fileref_create_temp(arglist[0].uint, 
+            arglist[3].opaqueref = glk_fileref_create_temp(arglist[0].uint,
                 arglist[1].uint);
             break;
         case 0x0061: /* fileref_create_by_name */
-            arglist[4].opaqueref = glk_fileref_create_by_name(arglist[0].uint, 
+            arglist[4].opaqueref = glk_fileref_create_by_name(arglist[0].uint,
                 arglist[1].charstr, arglist[2].uint);
             break;
         case 0x0062: /* fileref_create_by_prompt */
-            arglist[4].opaqueref = glk_fileref_create_by_prompt(arglist[0].uint, 
+            arglist[4].opaqueref = glk_fileref_create_by_prompt(arglist[0].uint,
                 arglist[1].uint, arglist[2].uint);
             break;
         case 0x0063: /* fileref_destroy */
             glk_fileref_destroy(arglist[0].opaqueref);
             break;
         case 0x0064: /* fileref_iterate */
-            if (arglist[1].ptrflag) 
+            if (arglist[1].ptrflag)
                 arglist[4].opaqueref = glk_fileref_iterate(arglist[0].opaqueref, &arglist[2].uint);
             else
                 arglist[3].opaqueref = glk_fileref_iterate(arglist[0].opaqueref, NULL);
@@ -695,7 +695,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             arglist[1].uint = glk_fileref_does_file_exist(arglist[0].opaqueref);
             break;
         case 0x0068: /* fileref_create_from_fileref */
-            arglist[4].opaqueref = glk_fileref_create_from_fileref(arglist[0].uint, 
+            arglist[4].opaqueref = glk_fileref_create_from_fileref(arglist[0].uint,
                 arglist[1].opaqueref, arglist[2].uint);
             break;
         case 0x0080: /* put_char */
@@ -711,17 +711,17 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             glk_put_string_stream(arglist[0].opaqueref, arglist[1].charstr);
             break;
         case 0x0084: /* put_buffer */
-            if (arglist[0].ptrflag) 
+            if (arglist[0].ptrflag)
                 glk_put_buffer(arglist[1].array, arglist[2].uint);
             else
                 glk_put_buffer(NULL, 0);
             break;
         case 0x0085: /* put_buffer_stream */
-            if (arglist[1].ptrflag) 
-                glk_put_buffer_stream(arglist[0].opaqueref, 
+            if (arglist[1].ptrflag)
+                glk_put_buffer_stream(arglist[0].opaqueref,
                     arglist[2].array, arglist[3].uint);
             else
-                glk_put_buffer_stream(arglist[0].opaqueref, 
+                glk_put_buffer_stream(arglist[0].opaqueref,
                     NULL, 0);
             break;
         case 0x0086: /* set_style */
@@ -734,19 +734,19 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             arglist[2].uint = glk_get_char_stream(arglist[0].opaqueref);
             break;
         case 0x0091: /* get_line_stream */
-            if (arglist[1].ptrflag) 
-                arglist[5].uint = glk_get_line_stream(arglist[0].opaqueref, 
+            if (arglist[1].ptrflag)
+                arglist[5].uint = glk_get_line_stream(arglist[0].opaqueref,
                     arglist[2].array, arglist[3].uint);
             else
-                arglist[3].uint = glk_get_line_stream(arglist[0].opaqueref, 
+                arglist[3].uint = glk_get_line_stream(arglist[0].opaqueref,
                     NULL, 0);
             break;
         case 0x0092: /* get_buffer_stream */
-            if (arglist[1].ptrflag) 
-                arglist[5].uint = glk_get_buffer_stream(arglist[0].opaqueref, 
+            if (arglist[1].ptrflag)
+                arglist[5].uint = glk_get_buffer_stream(arglist[0].opaqueref,
                     arglist[2].array, arglist[3].uint);
             else
-                arglist[3].uint = glk_get_buffer_stream(arglist[0].opaqueref, 
+                arglist[3].uint = glk_get_buffer_stream(arglist[0].opaqueref,
                     NULL, 0);
             break;
         case 0x00A0: /* char_to_lower */
@@ -863,12 +863,12 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             }
             break;
         case 0x00E1: /* image_draw */
-            arglist[5].uint = glk_image_draw(arglist[0].opaqueref, 
+            arglist[5].uint = glk_image_draw(arglist[0].opaqueref,
                 arglist[1].uint,
                 arglist[2].sint, arglist[3].sint);
             break;
         case 0x00E2: /* image_draw_scaled */
-            arglist[7].uint = glk_image_draw_scaled(arglist[0].opaqueref, 
+            arglist[7].uint = glk_image_draw_scaled(arglist[0].opaqueref,
                 arglist[1].uint,
                 arglist[2].sint, arglist[3].sint,
                 arglist[4].uint, arglist[5].uint);
@@ -892,7 +892,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
 #endif /* GLK_MODULE_IMAGE */
 #ifdef GLK_MODULE_SOUND
         case 0x00F0: /* schannel_iterate */
-            if (arglist[1].ptrflag) 
+            if (arglist[1].ptrflag)
                 arglist[4].opaqueref = glk_schannel_iterate(arglist[0].opaqueref, &arglist[2].uint);
             else
                 arglist[3].opaqueref = glk_schannel_iterate(arglist[0].opaqueref, NULL);
@@ -910,7 +910,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             arglist[3].uint = glk_schannel_play(arglist[0].opaqueref, arglist[1].uint);
             break;
         case 0x00F9: /* schannel_play_ext */
-            arglist[5].uint = glk_schannel_play_ext(arglist[0].opaqueref, 
+            arglist[5].uint = glk_schannel_play_ext(arglist[0].opaqueref,
                 arglist[1].uint, arglist[2].uint, arglist[3].uint);
             break;
         case 0x00FA: /* schannel_stop */
@@ -937,7 +937,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             glk_cancel_hyperlink_event(arglist[0].opaqueref);
             break;
 #endif /* GLK_MODULE_HYPERLINKS */
-            
+
         default:
             /* do nothing */
             break;

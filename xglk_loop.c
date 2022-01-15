@@ -18,7 +18,7 @@ void xglk_event_poll(event_t *ev, glui32 millisec)
 {
   struct timeval tv, curtime, outtime;
   /* just check for a timer event, nothing else. */
-  
+
   eventloop_event = ev;
 
   if (millisec) {
@@ -34,8 +34,8 @@ void xglk_event_poll(event_t *ev, glui32 millisec)
 
   if (millisec) {
     gettimeofday(&curtime, NULL);
-    if (curtime.tv_sec > outtime.tv_sec 
-      || (curtime.tv_sec == outtime.tv_sec 
+    if (curtime.tv_sec > outtime.tv_sec
+      || (curtime.tv_sec == outtime.tv_sec
 	&& curtime.tv_usec > outtime.tv_usec)) {
       lasttime = curtime;
       eventloop_setevent(evtype_Timer, NULL, 0, 0);
@@ -83,8 +83,8 @@ void xglk_event_loop(event_t *ev, glui32 millisec)
 
     if (millisec && !firsttime) {
       gettimeofday(&curtime, NULL);
-      if (curtime.tv_sec > outtime.tv_sec 
-	|| (curtime.tv_sec == outtime.tv_sec 
+      if (curtime.tv_sec > outtime.tv_sec
+	|| (curtime.tv_sec == outtime.tv_sec
 	  && curtime.tv_usec > outtime.tv_usec)) {
 	lasttime = curtime;
 	eventloop_setevent(evtype_Timer, NULL, 0, 0);
@@ -94,12 +94,12 @@ void xglk_event_loop(event_t *ev, glui32 millisec)
     firsttime = FALSE;
 
     /*
-    eventp = XCheckMaskEvent(xiodpy, ~(NoEventMask), &xev); 
+    eventp = XCheckMaskEvent(xiodpy, ~(NoEventMask), &xev);
     if (!eventp)
     eventp = XCheckTypedEvent(xiodpy, SelectionClear, &xev);*/
 
     eventp = XCheckIfEvent(xiodpy, &xev, &alleventsplot, NULL);
-    
+
     if (gli_just_killed) {
       gli_fast_exit();
       continue;
@@ -109,7 +109,7 @@ void xglk_event_loop(event_t *ev, glui32 millisec)
       struct timeval tv;
       fd_set readbits;
 
-      /* Wait for some activity on the X connection. */      
+      /* Wait for some activity on the X connection. */
       tv.tv_sec = 0;
       tv.tv_usec = TICKLENGTH;
       FD_ZERO(&readbits);
@@ -173,7 +173,7 @@ void xglk_event_loop(event_t *ev, glui32 millisec)
     case MotionNotify:
       do {
 	ix = XCheckWindowEvent(xiodpy, xiowin, ButtonMotionMask, &xev);
-      } while (ix); 
+      } while (ix);
       pt.x = xev.xbutton.x;
       pt.y = xev.xbutton.y;
       xglk_perform_click(mouse_Move, &pt,
@@ -186,9 +186,9 @@ void xglk_event_loop(event_t *ev, glui32 millisec)
       xglk_perform_click(mouse_Up, &pt,
 	xev.xbutton.button, xev.xbutton.state);
       break;
-      
+
     case ConfigureNotify:
-      if (xev.xconfigure.width != xio_wid 
+      if (xev.xconfigure.width != xio_wid
 	|| xev.xconfigure.height != xio_hgt) {
 	xio_wid = xev.xconfigure.width;
 	xio_hgt = xev.xconfigure.height;
@@ -212,7 +212,7 @@ void xglk_event_loop(event_t *ev, glui32 millisec)
       if (cx && req->target == XA_STRING) {
 	not->property = req->property;
 	/*printf("### XChangeProperty win %lx; %s %s %d %d %c... %ld\n",
-	  req->requestor, 
+	  req->requestor,
 	  XGetAtomName(xiodpy, req->property),
 	  XGetAtomName(xiodpy, req->target),
 	  8, PropModeReplace, *cx, len);*/
@@ -256,7 +256,7 @@ void xglk_event_loop(event_t *ev, glui32 millisec)
 
   }
 
-  /* If any mouse-up routine did real work, we'd have to call it here. 
+  /* If any mouse-up routine did real work, we'd have to call it here.
      Since none does, we'll hold off for now. */
 
   eventloop_event = NULL;
@@ -274,7 +274,7 @@ void eventloop_setevent(glui32 evtype, window_t *win, glui32 val1, glui32 val2)
 
 glui32 eventloop_isevent()
 {
-  if (eventloop_event) 
+  if (eventloop_event)
     return eventloop_event->type;
   else
     return 0;

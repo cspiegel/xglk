@@ -15,7 +15,7 @@ static char lastsavename[256] = "game.sav";
 static char lastscriptname[256] = "script.txt";
 static char lastcmdname[256] = "commands.txt";
 static char lastdataname[256] = "file.dat";
-    
+
 int init_gli_filerefs()
 {
   gli_filereflist = NULL;
@@ -25,10 +25,10 @@ int init_gli_filerefs()
 static fileref_t *gli_new_fileref(char *filename, glui32 usage, glui32 rock)
 {
   fileref_t *fref = (fileref_t *)malloc(sizeof(fileref_t));
-  
+
   if (!fref)
     return NULL;
-  
+
   fref->filename = malloc(1 + strlen(filename));
   strcpy(fref->filename, filename);
 
@@ -36,18 +36,18 @@ static fileref_t *gli_new_fileref(char *filename, glui32 usage, glui32 rock)
     fref->textmode = TRUE;
   else
     fref->textmode = FALSE;
-  
+
   fref->filetype = (usage & fileusage_TypeMask);
-  
+
   fref->rock = rock;
-  
+
   fref->chain_prev = NULL;
   fref->chain_next = gli_filereflist;
   gli_filereflist = fref;
   if (fref->chain_next) {
     fref->chain_next->chain_prev = fref;
   }
-  
+
   if (gli_register_obj)
     fref->disprock = (*gli_register_obj)(fref, gidisp_Class_Fileref);
   else
@@ -59,7 +59,7 @@ static fileref_t *gli_new_fileref(char *filename, glui32 usage, glui32 rock)
 static void gli_delete_fileref(fileref_t *fref)
 {
   fileref_t *prev, *next;
-  
+
   if (gli_unregister_obj)
     (*gli_unregister_obj)(fref, gidisp_Class_Fileref, fref->disprock);
 
@@ -91,13 +91,13 @@ fileref_t *glk_fileref_iterate(fileref_t *fref, glui32 *rock)
   else {
     fref = fref->chain_next;
   }
-  
+
   if (fref) {
     if (rock)
       *rock = fref->rock;
     return fref;
   }
-  
+
   if (rock)
     *rock = 0;
   return NULL;
@@ -125,25 +125,25 @@ frefid_t glk_fileref_create_temp(glui32 usage, glui32 rock)
 {
   char *filename;
   fileref_t *fref;
-    
-  /* This is a pretty good way to do this on Unix systems. 
+
+  /* This is a pretty good way to do this on Unix systems.
      I have no idea about the DOS/Windows world. */
-        
+
   filename = tmpnam(NULL);
-    
+
   fref = gli_new_fileref(filename, usage, rock);
   if (!fref) {
     gli_strict_warning("fileref_create_temp: unable to create fileref.");
     return 0;
   }
-    
+
   return fref;
 }
 
 frefid_t glk_fileref_create_from_fileref(glui32 usage, frefid_t oldfref,
     glui32 rock)
 {
-  fileref_t *fref; 
+  fileref_t *fref;
 
   if (!oldfref) {
     gli_strict_warning("fileref_create_from_fileref: invalid ref");
@@ -155,7 +155,7 @@ frefid_t glk_fileref_create_from_fileref(glui32 usage, frefid_t oldfref,
     gli_strict_warning("fileref_create_from_fileref: unable to create fileref.");
     return NULL;
   }
-    
+
   return fref;
 }
 
@@ -167,38 +167,38 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
   char buf2[512];
   int len;
   char *cx;
-    
+
   len = strlen(name);
   if (len > 255)
     len = 255;
-    
-  /* Take out all '/' characters, and make sure the length is greater 
-     than zero. Again, this is the right behavior in Unix. 
+
+  /* Take out all '/' characters, and make sure the length is greater
+     than zero. Again, this is the right behavior in Unix.
      DOS/Windows might want to take out '\' instead, unless the
-     stdio library converts slashes for you. They'd also want to trim 
-     to 8 characters. Remember, the overall goal is to make a legal 
-     platform-native filename, without any extra directory 
+     stdio library converts slashes for you. They'd also want to trim
+     to 8 characters. Remember, the overall goal is to make a legal
+     platform-native filename, without any extra directory
      components.
-     Suffixes are another sore point. Really, the game program 
+     Suffixes are another sore point. Really, the game program
      shouldn't have a suffix on the name passed to this function. So
      in DOS/Windows, this function should chop off dot-and-suffix,
      if there is one, and then add a dot and a three-letter suffix
-     appropriate to the file type (as gleaned from the usage 
+     appropriate to the file type (as gleaned from the usage
      argument.)
   */
-    
+
   memcpy(buf, name, len);
   if (len == 0) {
     buf[0] = 'X';
     len++;
   }
   buf[len] = '\0';
-    
+
   for (cx=buf; *cx; cx++) {
     if (*cx == '/')
       *cx = '-';
   }
-    
+
   sprintf(buf2, "%s/%s", workingdir, buf);
 
   fref = gli_new_fileref(buf2, usage, rock);
@@ -206,7 +206,7 @@ frefid_t glk_fileref_create_by_name(glui32 usage, char *name,
     gli_strict_warning("fileref_create_by_name: unable to create fileref.");
     return 0;
   }
-    
+
   return fref;
 }
 
@@ -219,7 +219,7 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
   char *cx;
   int ix, val;
   char *prompt, *prompt2, *lastbuf;
-    
+
   switch (usage & fileusage_TypeMask) {
   case fileusage_SavedGame:
     prompt = "Enter saved game";
@@ -239,14 +239,14 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
     lastbuf = lastdataname;
     break;
   }
-    
+
   if (fmode == filemode_Read)
     prompt2 = "to load";
   else
     prompt2 = "to store";
-    
+
   sprintf(prbuf, "%s %s: ", prompt, prompt2);
-    
+
   if (prefs.prompt_defaults) {
     strcpy(buf, lastbuf);
     val = strlen(buf);
@@ -255,35 +255,35 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
     buf[0] = 0;
     val = 0;
   }
-    
+
   ix = xmsg_getline(prbuf, buf, 255, &val);
   if (!ix) {
     /* The player cancelled input. */
     return 0;
   }
-    
+
   buf[val] = '\0';
-    
-  while (val 
-    && (buf[val-1] == '\n' 
-      || buf[val-1] == '\r' 
+
+  while (val
+    && (buf[val-1] == '\n'
+      || buf[val-1] == '\r'
       || buf[val-1] == ' '))
     val--;
   buf[val] = '\0';
-    
+
   for (cx = buf; *cx == ' '; cx++) { }
-    
+
   val = strlen(cx);
   if (!val) {
     /* The player just hit return. */
     return 0;
   }
-    
+
   if (cx[0] == '/')
     strcpy(newbuf, cx);
   else
     sprintf(newbuf, "%s/%s", workingdir, cx);
-    
+
   if (fmode != filemode_Read) {
     if (!stat(newbuf, &sbuf) && S_ISREG(sbuf.st_mode)) {
       sprintf(prbuf, "Overwrite \"%s\"? [y/n] ", cx);
@@ -306,7 +306,7 @@ frefid_t glk_fileref_create_by_prompt(glui32 usage, glui32 fmode,
     gli_strict_warning("fileref_create_by_prompt: unable to create fileref.");
     return 0;
   }
-    
+
   return fref;
 }
 
@@ -318,13 +318,13 @@ glui32 glk_fileref_does_file_exist(fileref_t *fref)
     gli_strict_warning("fileref_does_file_exist: invalid ref");
     return FALSE;
   }
-    
+
   /* This is sort of Unix-specific, but probably any stdio library
      will implement at least this much of stat(). */
-    
+
   if (stat(fref->filename, &buf))
     return 0;
-    
+
   if (S_ISREG(buf.st_mode))
     return 1;
   else
@@ -337,10 +337,10 @@ void glk_fileref_delete_file(fileref_t *fref)
     gli_strict_warning("fileref_delete_file: invalid ref");
     return;
   }
-    
+
   /* If you don't have the unlink() function, obviously, change it
      to whatever file-deletion function you do have. */
-        
+
   unlink(fref->filename);
 }
 
@@ -349,8 +349,8 @@ void glkunix_set_base_file(char *filename)
 {
   char *cx;
   int ix;
-  
-  for (ix=strlen(filename)-1; ix >= 0; ix--) 
+
+  for (ix=strlen(filename)-1; ix >= 0; ix--)
     if (filename[ix] == '/')
       break;
 
@@ -366,14 +366,14 @@ void glkunix_set_base_file(char *filename)
   }
 
   strcpy(lastsavename, filename+ix);
-  for (ix=strlen(lastsavename)-1; ix >= 0; ix--) 
-    if (lastsavename[ix] == '.') 
+  for (ix=strlen(lastsavename)-1; ix >= 0; ix--)
+    if (lastsavename[ix] == '.')
       break;
   if (ix >= 0)
     lastsavename[ix] = '\0';
   strcpy(lastscriptname, lastsavename);
   strcpy(lastdataname, lastsavename);
-    
+
   strcat(lastsavename, ".sav");
   strcat(lastscriptname, ".txt");
   strcat(lastdataname, ".dat");
