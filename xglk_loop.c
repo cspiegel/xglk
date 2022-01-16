@@ -1,3 +1,4 @@
+#include <sys/select.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <X11/keysym.h>
