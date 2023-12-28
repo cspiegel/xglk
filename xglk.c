@@ -181,7 +181,7 @@ int xglk_init(int argc, char *argv[], glkunix_startup_t *startdata)
 
 /* Arrange all the subwindows and the message line, based on the
    xio_wid and xio_hgt. Doesn't do any drawing. */
-void xglk_arrange_window()
+void xglk_arrange_window(void)
 {
   XRectangle box;
   int botheight;
@@ -222,7 +222,7 @@ void xglk_invalidate(XRectangle *box)
   xio_any_invalid = TRUE;
 }
 
-void xglk_redraw()
+void xglk_redraw(void)
 {
   if (gli_rootwin) {
     int linewid = MATTE_WIDTH-3;
@@ -455,7 +455,7 @@ void xglk_draw_dot(int xpos, int ypos, int linehgt)
   XFillPolygon(xiodpy, xiowin, gcflip, polydot, 3, Convex, CoordModePrevious);
 }
 
-void xglk_relax_memory()
+void xglk_relax_memory(void)
 {
   picture_relax_memory();
 }

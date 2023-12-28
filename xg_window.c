@@ -49,7 +49,7 @@ static void win_pair_destroy(window_pair_t *dwin);
 static void win_pair_rearrange(window_t *win, XRectangle *box);
 static void win_pair_redraw(window_t *win);
 
-int init_gli_windows()
+int init_gli_windows(void)
 {
   gli_windowlist = NULL;
 
@@ -181,7 +181,7 @@ window_t *glk_window_iterate(window_t *win, glui32 *rock)
   return NULL;
 }
 
-winid_t glk_window_get_root()
+winid_t glk_window_get_root(void)
 {
   if (!gli_rootwin)
     return 0;
@@ -712,7 +712,7 @@ void glk_window_close(window_t *win, stream_result_t *result)
    glk_select(), which takes care of dirty data in valid regions.
    It would be really cool if this clipped to the valid region,
    and the exposure stuff clipped to invalid, but that's hard in X. */
-void gli_windows_flush()
+void gli_windows_flush(void)
 {
   int ix;
   window_t *win;
@@ -966,7 +966,7 @@ void gli_windows_set_paging(int forcetoend)
   }
 }
 
-void gli_windows_trim_buffers()
+void gli_windows_trim_buffers(void)
 {
   window_t *win;
 

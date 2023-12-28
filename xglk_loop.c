@@ -273,7 +273,7 @@ void eventloop_setevent(glui32 evtype, window_t *win, glui32 val1, glui32 val2)
   }
 }
 
-glui32 eventloop_isevent()
+glui32 eventloop_isevent(void)
 {
   if (eventloop_event)
     return eventloop_event->type;

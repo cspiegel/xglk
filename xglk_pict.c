@@ -23,7 +23,7 @@ static void fill_image(XImage *gimp, char *srcdata, char *destdata,
   long srcrowbytes, long destrowbytes);
 static XImage *scale_image(XImage *src, int destwidth, int destheight);
 
-int init_pictures()
+int init_pictures(void)
 {
   table = NULL;
   return TRUE;
@@ -209,7 +209,7 @@ void picture_draw(picture_t *pic, Drawable dest,
     destl-xpos, destt-ypos, destr-destl, destb-destt, destl, destt);
 }
 
-void picture_relax_memory()
+void picture_relax_memory(void)
 {
   int ix, buck;
   picture_t *pic;

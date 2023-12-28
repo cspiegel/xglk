@@ -23,7 +23,7 @@ static int editx, dotx;
 static void redrawbuf(void);
 static void adjustdot(int visible);
 
-int init_xmsg()
+int init_xmsg(void)
 {
   message_size = 80;
   message = (char *)malloc(message_size * sizeof(char));
@@ -49,7 +49,7 @@ void xmsg_resize(int x, int y, int wid, int hgt)
   bbox.height = hgt;
 }
 
-void xmsg_redraw()
+void xmsg_redraw(void)
 {
   XFillRectangle(xiodpy, xiowin, gcback,
     bbox.x, bbox.y, bbox.width, bbox.height);
@@ -68,7 +68,7 @@ void xmsg_redraw()
   }
 }
 
-static void redrawbuf()
+static void redrawbuf(void)
 {
   xglk_clearfor_string(&(plainfonts.gc[0].backcolor),
     editx-4, bbox.y, bbox.x+bbox.width-editx+4, bbox.height);
@@ -121,7 +121,7 @@ void xmsg_set_message(char *str, int sticky)
   messagetime.tv_sec += TIMEOUT;
 }
 
-void xmsg_check_timeout()
+void xmsg_check_timeout(void)
 {
   struct timeval tv;
 

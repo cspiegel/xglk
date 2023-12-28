@@ -10,7 +10,7 @@ static stream_t *gli_new_stream(glui32 type, int readable, int writable,
   glui32 rock);
 static void gli_delete_stream(stream_t *str);
 
-int init_gli_streams()
+int init_gli_streams(void)
 {
   stream_t *gstr;
 
@@ -307,7 +307,7 @@ void gli_stream_close(stream_t *str)
   gli_delete_stream(str);
 }
 
-void gli_streams_close_all()
+void gli_streams_close_all(void)
 {
   /* This is used only at shutdown time; it closes file streams (the
      only ones that need finalization.) */
@@ -388,7 +388,7 @@ void glk_stream_set_current(stream_t *str)
   gli_currentstr = str;
 }
 
-stream_t *glk_stream_get_current()
+stream_t *glk_stream_get_current(void)
 {
   if (!gli_currentstr)
     return 0;

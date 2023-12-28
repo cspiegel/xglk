@@ -27,7 +27,7 @@ void xglk_store_scrap(char *str, long len)
   XSetSelectionOwner(xiodpy, XA_PRIMARY, xiowin, CurrentTime);
 }
 
-void xglk_clear_scrap()
+void xglk_clear_scrap(void)
 {
   if (scrap) {
     free(scrap);

@@ -16,7 +16,7 @@ static char lastscriptname[256] = "script.txt";
 static char lastcmdname[256] = "commands.txt";
 static char lastdataname[256] = "file.dat";
 
-int init_gli_filerefs()
+int init_gli_filerefs(void)
 {
   gli_filereflist = NULL;
   return TRUE;

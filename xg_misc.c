@@ -21,7 +21,7 @@ void (*gli_unregister_arr)(void *array, glui32 len, char *typecode,
 static void gli_sig_interrupt(int val);
 int gli_just_killed;
 
-int init_gli_misc()
+int init_gli_misc(void)
 {
   int ix;
   glui32 res;
@@ -103,7 +103,7 @@ static void gli_sig_interrupt(int val)
   gli_just_killed = TRUE;
 }
 
-void glk_exit()
+void glk_exit(void)
 {
   event_t ev;
 
@@ -112,7 +112,7 @@ void glk_exit()
   exit(1);
 }
 
-void gli_fast_exit()
+void gli_fast_exit(void)
 {
   void (*func)(void);
 

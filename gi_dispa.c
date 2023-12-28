@@ -237,12 +237,12 @@ static gidispatch_function_t function_table[] = {
 #endif /* GLK_MODULE_HYPERLINKS */
 };
 
-glui32 gidispatch_count_classes()
+glui32 gidispatch_count_classes(void)
 {
     return 4;
 }
 
-glui32 gidispatch_count_intconst()
+glui32 gidispatch_count_intconst(void)
 {
     return NUMINTCONSTANTS;
 }
@@ -254,7 +254,7 @@ gidispatch_intconst_t *gidispatch_get_intconst(glui32 index)
     return &(intconstant_table[index]);
 }
 
-glui32 gidispatch_count_functions()
+glui32 gidispatch_count_functions(void)
 {
     return NUMFUNCTIONS;
 }

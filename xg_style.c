@@ -16,7 +16,7 @@ static void gli_stylehint_set(stylehints_t *hints, glui32 styl, glui32 hint,
 
 static unsigned short MaxRGBDifference(XColor *col1, XColor *col2);
 
-int init_gli_styles()
+int init_gli_styles(void)
 {
   int ix, jx;
 

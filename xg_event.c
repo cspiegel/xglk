@@ -36,7 +36,7 @@ void glk_request_timer_events(glui32 millisecs)
   timer_millisecs = millisecs;
 }
 
-void glk_tick()
+void glk_tick(void)
 {
   /* Nothing for us to do. */
 }

@@ -261,7 +261,7 @@ static binding_t win_textbuffer_paging_bindings[] = {
   {0, NULL}
 };
 
-int init_xkey()
+int init_xkey(void)
 {
   int ix;
 
@@ -689,7 +689,7 @@ void xkey_perform_key(int key, unsigned int state)
   }
 }
 
-void xkey_guess_focus()
+void xkey_guess_focus(void)
 {
   window_t *altwin;
 
