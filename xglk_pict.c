@@ -381,7 +381,7 @@ static XImage *load_image_png(FILE *fl)
   channels = png_get_channels(png_ptr, info_ptr);
 
   destdepth = xiodepth;
-  destrowbytes = (width * destdepth + 7) / 8;
+  destrowbytes = (width * (destdepth == 24 ? 32 : destdepth) + 7) / 8;
   if (destrowbytes & 31)
     destrowbytes = (destrowbytes | 31) + 1;
   destdata = malloc(destrowbytes * height);
@@ -684,8 +684,9 @@ static void fill_image(XImage *gimp, char *srcdata, char *destdata,
 	  destptr[rsb] = srcptr[0];
 	  destptr[gsb] = srcptr[0];
 	  destptr[bsb] = srcptr[0];
+	  destptr[3]   = 0;
 	  srcptr += channels;
-	  destptr += 3;
+	  destptr += 4;
 	}
 	srcrowptr += srcrowbytes;
 	destrowptr += destrowbytes;
@@ -699,8 +700,9 @@ static void fill_image(XImage *gimp, char *srcdata, char *destdata,
 	  destptr[rsb] = srcptr[0];
 	  destptr[gsb] = srcptr[1];
 	  destptr[bsb] = srcptr[2];
+	  destptr[3]   = 0;
 	  srcptr += channels;
-	  destptr += 3;
+	  destptr += 4;
 	}
 	srcrowptr += srcrowbytes;
 	destrowptr += destrowbytes;
